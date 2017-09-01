@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="chrome插件开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="dev guide总体概览按照开发的目的，chrome extension可以分为  改变google chrome外观 Browser Actions Page Action Options Pages Desktop Notifications Omnibox Override Pages Themes">
+<meta name="keywords" content="chrome插件开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome插件开发">
+<meta property="og:url" content="http://yoursite.com/2017/05/20/chrome插件开发/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="dev guide总体概览按照开发的目的，chrome extension可以分为  改变google chrome外观 Browser Actions Page Action Options Pages Desktop Notifications Omnibox Override Pages Themes">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://developer.chrome.com/static/images/perms-hw1.png">
+<meta property="og:image" content="https://developer.chrome.com/static/images/perms-optional.png">
+<meta property="og:image" content="https://developer.chrome.com/static/images/browser-action.png">
+<meta property="og:image" content="https://developer.chrome.com/static/images/overview/arch-2.gif">
+<meta property="og:image" content="https://developer.chrome.com/static/images/overview/arch-3.gif">
+<meta property="og:image" content="https://developer.chrome.com/static/images/overview/arch-cs.gif">
+<meta property="og:updated_time" content="2017-08-31T06:56:57.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="chrome插件开发">
+<meta name="twitter:description" content="dev guide总体概览按照开发的目的，chrome extension可以分为  改变google chrome外观 Browser Actions Page Action Options Pages Desktop Notifications Omnibox Override Pages Themes">
+<meta name="twitter:image" content="https://developer.chrome.com/static/images/perms-hw1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/20/chrome插件开发/"/>
+
+
+
+
+
+  <title>chrome插件开发 | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/20/chrome插件开发/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">chrome插件开发</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-20T12:19:41+08:00">
+                2017-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Front-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Others/" itemprop="url" rel="index">
+                    <span itemprop="name">Others</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="dev-guide总体概览"><a href="#dev-guide总体概览" class="headerlink" title="dev guide总体概览"></a><a href="https://developer.chrome.com/extensions/devguide" target="_blank" rel="external">dev guide</a>总体概览</h3><p>按照开发的目的，chrome extension可以分为</p>
+<ul>
+<li>改变google chrome外观<ul>
+<li><a href="https://developer.chrome.com/extensions/browserAction" target="_blank" rel="external">Browser Actions</a></li>
+<li><a href="https://developer.chrome.com/extensions/pageAction" target="_blank" rel="external">Page Action</a></li>
+<li><a href="https://developer.chrome.com/extensions/options" target="_blank" rel="external">Options Pages</a></li>
+<li><a href="https://developer.chrome.com/extensions/desktop_notifications" target="_blank" rel="external">Desktop Notifications</a></li>
+<li><a href="https://developer.chrome.com/extensions/omnibox" target="_blank" rel="external">Omnibox</a></li>
+<li><a href="https://developer.chrome.com/extensions/override" target="_blank" rel="external">Override Pages</a></li>
+<li><a href="https://developer.chrome.com/extensions/themes" target="_blank" rel="external">Themes</a></li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li>与google chrome交互开发<ul>
+<li><a href="https://developer.chrome.com/extensions/bookmarks" target="_blank" rel="external">Bookmarks</a></li>
+<li><a href="https://developer.chrome.com/extensions/cookies" target="_blank" rel="external">Cookies</a></li>
+<li><a href="https://developer.chrome.com/extensions/devtools" target="_blank" rel="external">Developer Tools</a></li>
+<li><a href="https://developer.chrome.com/extensions/events" target="_blank" rel="external">Events</a></li>
+<li><a href="https://developer.chrome.com/extensions/history" target="_blank" rel="external">History</a></li>
+<li><a href="https://developer.chrome.com/extensions/tabs" target="_blank" rel="external">Tabs</a></li>
+<li><a href="https://developer.chrome.com/extensions/windows" target="_blank" rel="external">Windows</a></li>
+</ul>
+</li>
+<li>扩展的内核实现<ul>
+<li><a href="https://developer.chrome.com/extensions/a11y" target="_blank" rel="external">Accessibility</a></li>
+<li><a href="https://developer.chrome.com/extensions/event_pages" target="_blank" rel="external">Event Pages</a></li>
+<li><a href="https://developer.chrome.com/extensions/content_scripts" target="_blank" rel="external">Content Scripts</a></li>
+<li><a href="https://developer.chrome.com/extensions/xhr" target="_blank" rel="external">Cross-Origin XHR</a></li>
+<li><a href="https://developer.chrome.com/extensions/i18n" target="_blank" rel="external">internationlization</a></li>
+<li><a href="https://developer.chrome.com/extensions/messaging" target="_blank" rel="external">Message Passing</a></li>
+<li><a href="https://developer.chrome.com/extensions/permissions" target="_blank" rel="external">Optional Permissions</a></li>
+<li><a href="https://developer.chrome.com/extensions/npapi" target="_blank" rel="external">NPAPI Plugins</a></li>
+</ul>
+</li>
+<li>完成并发布扩展<ul>
+<li><a href="https://developer.chrome.com/extensions/autoupdate" target="_blank" rel="external">Autoupdating</a></li>
+<li><a href="https://developer.chrome.com/extensions/hosting" target="_blank" rel="external">Hosting</a></li>
+<li><a href="https://developer.chrome.com/extensions/external_extensions" target="_blank" rel="external">Other Deployment Options</a></li>
+<li><a href="https://developer.chrome.com/extensions/packaging" target="_blank" rel="external">Packaging</a></li>
+</ul>
+</li>
+</ul>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="能做什么？"><a href="#能做什么？" class="headerlink" title="能做什么？"></a>能做什么？</h3><p>extensions可以使用浏览器提供给网页的api，扩展可以通过content scripts或者ajax与网页或者服务器进行交互，也可以通过编程与浏览器特性比如书签，其他tab进行交互</p>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="工具箱"><a href="#工具箱" class="headerlink" title="工具箱"></a>工具箱</h3><h4 id="manifest"><a href="#manifest" class="headerlink" title="manifest"></a><a href="https://developer.chrome.com/extensions/manifest" target="_blank" rel="external">manifest</a></h4><p>必须的字段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    // Required</div><div class="line">    &quot;manifest_version&quot;: 2,</div><div class="line">    &quot;name&quot;: &quot;My Extension&quot;,</div><div class="line">    &quot;version&quot;: &quot;versionString&quot;,</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="permissions"><a href="#permissions" class="headerlink" title="permissions"></a><a href="https://developer.chrome.com/extensions/declare_permissions#manifest" target="_blank" rel="external">permissions</a></h4><p>需要使用chrome.*APIs的时候，扩展在manifest中声明<em>permission</em>字段。如果API代表超能力，那么该字段做的事情就是可以给你开启这些能力。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&quot;permissions&quot;: [</div><div class="line">  &quot;tabs&quot;,</div><div class="line">  &quot;bookmarks&quot;,</div><div class="line">  &quot;http://www.blogger.com/&quot;,</div><div class="line">  &quot;http://*.google.com/&quot;,</div><div class="line">  &quot;unlimitedStorage&quot;,</div><div class="line">  ...</div><div class="line">],</div></pre></td></tr></table></figure>
+<p>当用户注册扩展的时候会显示<code>permission warning</code><img src="https://developer.chrome.com/static/images/perms-hw1.png" alt="permission warning"></p>
+<ul>
+<li>activeTab</li>
+</ul>
+<p>用户调用扩展的时候，给予扩展权限可以访问当前激活的tab。如果没有这个权限的话，扩展就得每访问页面一次就请求一次，也有可能被Hacker所利用。而有了该权限，获得权限仅仅是在用户的交互下（比如点击browser action，具体看下方）获得对应的访问权限，Hacker要攻击的话得等用户来主动触发，并且访问权限只会持续到该tab关闭。</p>
+<pre><code>什么情况下可以调用activeTab
+
+  - 点击browser action
+  - 点击page action
+  - 点击context menu item
+  - 通过commands API执行键盘快捷键
+  - 通过地址栏API接受建议
+</code></pre><p>当我们有这个权限之后也就有了访问API的超能力，这些超能力包括</p>
+<pre><code>- tabs.executeScript或tabs.insertCSS
+- 调用API返回的tabs.Tab可以获得当前tab的URL，title和favicon
+</code></pre><h4 id="options-permissions"><a href="#options-permissions" class="headerlink" title="options_permissions"></a><a href="https://developer.chrome.com/extensions/permissions" target="_blank" rel="external">options_permissions</a></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot;: &quot;My extension&quot;,</div><div class="line">  ...</div><div class="line">  &quot;optional_permissions&quot;: [ </div><div class="line">      &quot;tabs&quot;, </div><div class="line">      &quot;http://www.google.com/&quot; </div><div class="line">  ],</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果增加了权限，chrome会提示用户，和permission warning不同，不是在注册阶段。<img src="https://developer.chrome.com/static/images/perms-optional.png" alt="显示"></p>
+<h4 id="browser-action"><a href="#browser-action" class="headerlink" title="browser action"></a><a href="https://developer.chrome.com/extensions/browserAction" target="_blank" rel="external">browser action</a></h4><p>在地址栏的右边，通过icon，popup.html,popup.js来控制<img src="https://developer.chrome.com/static/images/browser-action.png" alt="icon"></p>
+<p>如要引用js，需通过src引入，不能直接script写入html页面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;name&quot;: &quot;My extension&quot;,</div><div class="line">    ...</div><div class="line">    &quot;browser_action&quot;: &#123;</div><div class="line">      &quot;default_icon&quot;: &#123;                    // optional</div><div class="line">        &quot;16&quot;: &quot;images/icon16.png&quot;,           // optional</div><div class="line">        &quot;24&quot;: &quot;images/icon24.png&quot;,           // optional</div><div class="line">        &quot;32&quot;: &quot;images/icon32.png&quot;            // optional</div><div class="line">      &#125;,</div><div class="line">      &quot;default_title&quot;: &quot;Google Mail&quot;,      // optional; shown in tooltip</div><div class="line">      &quot;default_popup&quot;: &quot;popup.html&quot;        // optional</div><div class="line">    &#125;,</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>(与之对应的有<a href="https://developer.chrome.com/extensions/pageAction" target="_blank" rel="external">page action</a>，出现在地址栏内侧)</p>
+<h4 id="options-pages"><a href="#options-pages" class="headerlink" title="options pages"></a><a href="https://developer.chrome.com/extensions/options" target="_blank" rel="external">options pages</a></h4><p>允许用户自定义扩展的外观，可以通过该页面来对自己的扩展进行配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;name&quot;: &quot;My extension&quot;,</div><div class="line">    ...</div><div class="line">    &quot;options_page&quot;: &quot;options.html&quot;,</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="event-pages"><a href="#event-pages" class="headerlink" title="event pages"></a><a href="https://developer.chrome.com/extensions/event_pages" target="_blank" rel="external">event pages</a></h4><p>作为扩展程序的资源调度脚本，管理一些任务或者状态。在扩展的整个生命周期都存在，可以与content script通过事件机制来通信</p>
+<h4 id="content-script"><a href="#content-script" class="headerlink" title="content script"></a><a href="https://developer.chrome.com/extensions/content_scripts" target="_blank" rel="external">content script</a></h4><ul>
+<li>访问的页面加载时注入，需要注意的是它在一个独立的环境下，与访问的页面通过shared DOM来通信，但不能访问页面的js变量或者函数，页面中的脚本也不能访问content scripts的变量和函数</li>
+<li>响应用户交互，程序动态注入，见例子</li>
+<li>通过API与页面，与扩展的其他部分通信的能力</li>
+</ul>
+<h4 id="chrome-APIs"><a href="#chrome-APIs" class="headerlink" title="chrome.*APIs"></a><a href="https://developer.chrome.com/extensions/api_index" target="_blank" rel="external">chrome.*APIs</a></h4><p>每个API都有Types,Properties,Methods和Events</p>
+<h4 id="Web-APIs"><a href="#Web-APIs" class="headerlink" title="Web APIs"></a>Web APIs</h4><p>除了chrome.*APIs，扩展也能使用浏览器提供给网页和web app的API。如果你想使用的API浏览器不支持，也可以通过绑定其他API库到你的扩展</p>
+<ul>
+<li>标准JavaScript APIs: core javascript,dom</li>
+<li>XMLHttpRequest</li>
+<li><a href="http://www.html5rocks.com" target="_blank" rel="external">HTML5</a>和其他新兴APIs<ul>
+<li><a href="http://www.html5rocks.com/tutorials/audio/quick/" target="_blank" rel="external">audio</a></li>
+<li><a href="http://www.html5rocks.com/tutorials/appcache/beginner/" target="_blank" rel="external">application cache</a></li>
+<li><a href="http://www.html5rocks.com/en/tutorials/#canvas" target="_blank" rel="external">canvas</a></li>
+<li><a href="http://www.html5rocks.com/tutorials/geolocation/trip_meter/" target="_blank" rel="external">geolocation</a></li>
+<li><a href="http://www.html5rocks.com/en/tutorials/offline/storage/" target="_blank" rel="external">local storage</a></li>
+<li><a href="http://www.html5rocks.com/tutorials/notifications/quick/" target="_blank" rel="external">notifications</a></li>
+<li><a href="http://www.html5rocks.com/en/tutorials/video/basics/" target="_blank" rel="external">video</a></li>
+<li><a href="http://www.html5rocks.com/tutorials/webdatabase/todo/" target="_blank" rel="external">web databases</a></li>
+</ul>
+</li>
+<li>WebKit APIs</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;style&gt;</div><div class="line">  div:hover &#123;</div><div class="line">    transform: rotate(360deg);</div><div class="line">    transition: all 1s ease-out;</div><div class="line">  &#125;</div><div class="line">&lt;/style&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>V8 APIs, 比如JSON,使用json相关函数</li>
+<li>自己添加的API库</li>
+</ul>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><h4 id="background-pages"><a href="#background-pages" class="headerlink" title="background pages"></a>background pages</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot;: &quot;My extension&quot;,</div><div class="line">  ...</div><div class="line">  &quot;background&quot;: &#123;</div><div class="line">    &quot;scripts&quot;: [&quot;eventPage.js&quot;],</div><div class="line">    &quot;persistent&quot;: false</div><div class="line">  &#125;,</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>background.html定义了Background pages，包含了控制extension的JavaScript脚本，有以下两种页面形式。一种是一直打开，一种是需要的时候加载，不需要的时候写在并且释放内存和其他资源。如果不是想一直开着节省资源，就用event pages。</p>
+<ul>
+<li>persistent background pages</li>
+<li>event pages</li>
+</ul>
+<h4 id="UI-pages"><a href="#UI-pages" class="headerlink" title="UI pages"></a>UI pages</h4><p>点击ui弹出层popup.html,该页面可以调用background pages内的函数。一个页面中的extensions可以互相访问dom,可以互相调用函数<br> <img src="https://developer.chrome.com/static/images/overview/arch-2.gif" alt="图片"></p>
+<h4 id="Content-scripts"><a href="#Content-scripts" class="headerlink" title="Content scripts"></a>Content scripts</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;content_scripts&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;matches&quot;: [&quot;http://www.google.com/*&quot;],</div><div class="line">          &quot;css&quot;: [&quot;mystyles.css&quot;],</div><div class="line">          &quot;js&quot;: [&quot;jquery.js&quot;, &quot;myscript.js&quot;]</div><div class="line">        &#125;</div><div class="line">    ],</div><div class="line">    // permissions字段表示限制在某些条件下注入content scripts</div><div class="line">    &quot;permissions&quot;: [</div><div class="line">        &quot;tabs&quot;, &quot;http://www.google.com/*&quot;          </div><div class="line">    ],</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该文件用于与页面交互的时候。content scripts就是当前页面在浏览器中加载时需要执行的JavaScript代码。就把content scripts当做页面加载时候执行的一个脚本，而不是一个插件的一部分就好理解多了。<br><img src="https://developer.chrome.com/static/images/overview/arch-3.gif" alt="图片"></p>
+<p>能做的事情：</p>
+<ul>
+<li>找到网页中没有链接的url并且转为超链接</li>
+<li>增加字号</li>
+<li>找到并且处理DOM中的microformat数据</li>
+</ul>
+<p>不能做的事情：</p>
+<ul>
+<li>不能使用插件页面定义的变量或者函数</li>
+<li>不能使用网页或者其他content scripts定义的变量或者函数</li>
+<li>不能使用chrome.*APIs,除了<ul>
+<li>extension( getURL , inIncognitoContext , lastError , onRequest , sendRequest )</li>
+<li>i18n</li>
+<li>runtime( connect , getManifest , getURL , id , onConnect , onMessage , sendMessage )</li>
+<li>storage</li>
+</ul>
+</li>
+</ul>
+<p>content scripts 可以与父插件交换信息。下面的消息传递详细会讲。<img src="https://developer.chrome.com/static/images/overview/arch-cs.gif" alt="图片"></p>
+<h4 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h4><p>页面中的extension经常需要通信，因为他们执行在同一个进程的同一线程，页面可以互相直接调各自的函数。</p>
+<p>可以使用chrome.extension方法来找到页面中的插件，getViews() 和 getBackgroundPage(), 在插件内一旦一个页面有了其他页面的引用，第一个页面就可以调用其他页面的函数，并且能够操纵他们的dom。</p>
+<p><code>content scripts</code>运行在页面环境中，而扩展不能。通常<code>content scripts</code>需要以某种方式与扩展进行通信。例如：<code>RSS Reader</code>扩展利用<code>content scripts</code>来检测页面中是否有<code>RSS feed</code>，然后通知<code>background page</code>来是否在当前页展示<code>page action</code>(上文提到的<code>page action</code>)</p>
+<p>上文提到的某种方式指的就是<strong>消息传递</strong>，一方能够监听到来自另一方的消息，传递的形式可以是json,null,boolean,number,string,array,object.对于实现在共享上下文中交换多条信息的一次请求和长时间保持连接都有对应的API.也可以实现给不同扩展发消息,只要我们知道另一个扩展的ID,这方面知识可以参照<a href="https://developer.chrome.com/extensions/messaging#external" target="_blank" rel="external">cross-extension messages</a></p>
+<h5 id="简单的一次请求"><a href="#简单的一次请求" class="headerlink" title="简单的一次请求"></a>简单的一次请求</h5><p><code>runtime.sendMessage</code> or <code>tabs.sendMessage</code>,可以实现从content scripts传递一个消息给扩展的其他脚本，然后脚本回传给你一些信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">// from content script</div><div class="line">chrome.runtime.sendMessage(&#123;greeting: &quot;hello&quot;&#125;, function(response) &#123;</div><div class="line">    console.log(response.farewell);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// from extensions</div><div class="line">chrome.tabs.query(&#123;active: true, currentWindow: true&#125;, function(tabs) &#123;</div><div class="line">    chrome.tabs.sendMessage(tabs[0].id, &#123;greeting: &quot;hello&quot;&#125;, function(  response) &#123;</div><div class="line">        console.log(response.farewell);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// 接受方</div><div class="line">chrome.runtime.onMessage.addListener(</div><div class="line">    function(request, sender, sendResponse) &#123;</div><div class="line">        console.log(sender.tab ?</div><div class="line">                &quot;from a content script:&quot; + sender.tab.url :</div><div class="line">                &quot;from the extension&quot;);</div><div class="line">        if (request.greeting == &quot;hello&quot;)</div><div class="line">            sendResponse(&#123;farewell: &quot;goodbye&quot;&#125;);</div><div class="line">    &#125;   </div><div class="line">);</div></pre></td></tr></table></figure>
+<h5 id="长连接"><a href="#长连接" class="headerlink" title="长连接"></a>长连接</h5><p>有时候需要长时间的保持会话而不是简单的一来一去，我们可以开启一个从content scripts到扩展的长连接通道，反过来一样。分别使用<code>runtime.connect</code>和<code>tabs.connect</code>实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">// 从content scripts打开的通道，发送和监听消息的实现细节</div><div class="line"></div><div class="line">var port = chrome.runtime.connect(&#123;name: &quot;knockknock&quot;&#125;);</div><div class="line">port.postMessage(&#123;joke: &quot;Knock knock&quot;&#125;);</div><div class="line">port.onMessage.addListener(function(msg) &#123;</div><div class="line">  if (msg.question == &quot;Who&apos;s there?&quot;)</div><div class="line">    port.postMessage(&#123;answer: &quot;Madame&quot;&#125;);</div><div class="line">  else if (msg.question == &quot;Madame who?&quot;)</div><div class="line">    port.postMessage(&#123;answer: &quot;Madame... Bovary&quot;&#125;);</div><div class="line">&#125;);</div><div class="line">// 从扩展打开通道和上述差不多，只不过需要指明要连接到哪个tab，并且使用tabs.connect</div><div class="line"></div><div class="line">// 处理发送来的消息需要注册一个 `runtime.onConnect`事件监听器，不管从content scripts到扩展，还是从扩展到content scripts。当一方触发connect的时候，事件触发，与`runtime.Port`通过连接来收发信息</div><div class="line">chrome.runtime.onConnect.addListener(function(port) &#123;</div><div class="line">    console.assert(port.name == &quot;knockknock&quot;);</div><div class="line">    port.onMessage.addListener(function(msg) &#123;</div><div class="line">        if (msg.joke == &quot;Knock knock&quot;)</div><div class="line">            port.postMessage(&#123;question: &quot;Who&apos;s there?&quot;&#125;);</div><div class="line">        else if (msg.answer == &quot;Madame&quot;)</div><div class="line">            port.postMessage(&#123;question: &quot;Madame who?&quot;&#125;);</div><div class="line">        else if (msg.answer == &quot;Madame... Bovary&quot;)</div><div class="line">            port.postMessage(&#123;question: &quot;I don&apos;t get it.&quot;&#125;);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h5 id="从页面传递消息"><a href="#从页面传递消息" class="headerlink" title="从页面传递消息"></a>从页面传递消息</h5><p>扩展可以与页面通信，需要在manifest中加入下述代码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&quot;externally_connectable&quot;: &#123;</div><div class="line">    &quot;matches&quot;: [&quot;*://*.example.com/*&quot;]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>对应匹配到的页面就可以用messaging API，可以使用<code>runtime.sendMessage</code>或<code>runtime.connect</code>发送消息给扩展。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// The ID of the extension we want to talk to.</div><div class="line">var editorExtensionId = &quot;abcdefghijklmnoabcdefhijklmnoabc&quot;;</div><div class="line"></div><div class="line">// Make a simple request:</div><div class="line">chrome.runtime.sendMessage(editorExtensionId, &#123;openUrlInEditor: url&#125;,</div><div class="line">    function(response) &#123;</div><div class="line">    if (!response.success)</div><div class="line">        handleError(url);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>在扩展中我们可以通过<code>runtime.onMessageExternal</code> or <code>runtime.onConnectExternal</code>APIs来监听消息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">chrome.runtime.onMessageExternal.addListener(</div><div class="line">    function(request, sender, sendResponse) &#123;</div><div class="line">        if (sender.url == blacklistedWebsite)</div><div class="line">            return;  // don&apos;t allow this web page access</div><div class="line">        if (request.openUrlInEditor)</div><div class="line">            openUrl(request.openUrlInEditor);</div><div class="line">    &#125;</div><div class="line">);</div></pre></td></tr></table></figure>
+<blockquote>
+</blockquote>
+<h4 id="保存数据和无痕模式"><a href="#保存数据和无痕模式" class="headerlink" title="保存数据和无痕模式"></a>保存数据和无痕模式</h4><p>可以使用storage API来数据持久化。无论什么时候想要保持数据的时候，都要考虑下是否是在无痕模式下。默认情况下，浏览器不会在无痕模式下，你应该考虑下用户在无痕模式下期待从你的插件里获得什么。</p>
+<p>无痕模式承诺window不会留下痕迹，当在无痕模式下处理数据的时候，光荣的遵守这一承诺。</p>
+<p>检测是否在无痕模式下,原理是检查tabs.Tab或者window.Window的incognito属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function saveTabData(tab, data) &#123;</div><div class="line">  if (tab.incognito) &#123;</div><div class="line">    chrome.runtime.getBackgroundPage(function(bgPage) &#123;</div><div class="line">      bgPage[tab.url] = data;      // Persist data ONLY in memory</div><div class="line">    &#125;);</div><div class="line">  &#125; else &#123;</div><div class="line">    localStorage[tab.url] = data;  // OK to store data</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><p>chrome-extension://extensionId//filename</p>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="发布"><a href="#发布" class="headerlink" title="发布"></a>发布</h3><p>开发模式下访问chrome://extensions启用Developer mode，点击Load unpacked extension，上传文件即可。</p>
+<p>发布到Chrome 网上应用商店：</p>
+<ul>
+<li>有一个已经制作好插件</li>
+<li>需要一张信用卡来激活Google Wallet</li>
+<li>需要支付5美元用来启用开发者账户</li>
+</ul>
+<p><strong><a href="#category">回到顶部</a></strong></p>
+<hr>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>包括browser action，event page，option page，content script，消息传递，页面与content script的交互，content script与event page的交互</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/chrome插件开发/" rel="tag"># chrome插件开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/10/异步编程基础之generator/" rel="next" title="异步编程基础之generator">
+                <i class="fa fa-chevron-left"></i> 异步编程基础之generator
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/01/es6之Set和Map/" rel="prev" title="es6之Set和Map">
+                es6之Set和Map <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-guide总体概览"><span class="nav-number">1.</span> <span class="nav-text">dev guide总体概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#能做什么？"><span class="nav-number">2.</span> <span class="nav-text">能做什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具箱"><span class="nav-number">3.</span> <span class="nav-text">工具箱</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#manifest"><span class="nav-number">3.1.</span> <span class="nav-text">manifest</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#permissions"><span class="nav-number">3.2.</span> <span class="nav-text">permissions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#options-permissions"><span class="nav-number">3.3.</span> <span class="nav-text">options_permissions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#browser-action"><span class="nav-number">3.4.</span> <span class="nav-text">browser action</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#options-pages"><span class="nav-number">3.5.</span> <span class="nav-text">options pages</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#event-pages"><span class="nav-number">3.6.</span> <span class="nav-text">event pages</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#content-script"><span class="nav-number">3.7.</span> <span class="nav-text">content script</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chrome-APIs"><span class="nav-number">3.8.</span> <span class="nav-text">chrome.*APIs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Web-APIs"><span class="nav-number">3.9.</span> <span class="nav-text">Web APIs</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构"><span class="nav-number">4.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#background-pages"><span class="nav-number">4.1.</span> <span class="nav-text">background pages</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UI-pages"><span class="nav-number">4.2.</span> <span class="nav-text">UI pages</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Content-scripts"><span class="nav-number">4.3.</span> <span class="nav-text">Content scripts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消息传递"><span class="nav-number">4.4.</span> <span class="nav-text">消息传递</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#简单的一次请求"><span class="nav-number">4.4.1.</span> <span class="nav-text">简单的一次请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接"><span class="nav-number">4.4.2.</span> <span class="nav-text">长连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#从页面传递消息"><span class="nav-number">4.4.3.</span> <span class="nav-text">从页面传递消息</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#保存数据和无痕模式"><span class="nav-number">4.5.</span> <span class="nav-text">保存数据和无痕模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布"><span class="nav-number">6.</span> <span class="nav-text">发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">7.</span> <span class="nav-text">例子</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="es6," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="为什么要新添加这两种数据结构Set用来解决集合中每个值只能有唯一的值，所以set中在添加的值的时候涉及值相等判断，-0,+0应被当作不同的值对待，但在最新的 ECMAScript 6规范中这点已被更改，所以Set中-0,+0都是0；虽然NaN!=NaN，但在set中也只能被添加一次。">
+<meta name="keywords" content="es6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="es6之Set和Map">
+<meta property="og:url" content="http://yoursite.com/2017/07/01/es6之Set和Map/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="为什么要新添加这两种数据结构Set用来解决集合中每个值只能有唯一的值，所以set中在添加的值的时候涉及值相等判断，-0,+0应被当作不同的值对待，但在最新的 ECMAScript 6规范中这点已被更改，所以Set中-0,+0都是0；虽然NaN!=NaN，但在set中也只能被添加一次。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-31T06:56:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="es6之Set和Map">
+<meta name="twitter:description" content="为什么要新添加这两种数据结构Set用来解决集合中每个值只能有唯一的值，所以set中在添加的值的时候涉及值相等判断，-0,+0应被当作不同的值对待，但在最新的 ECMAScript 6规范中这点已被更改，所以Set中-0,+0都是0；虽然NaN!=NaN，但在set中也只能被添加一次。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/01/es6之Set和Map/"/>
+
+
+
+
+
+  <title>es6之Set和Map | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/01/es6之Set和Map/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">es6之Set和Map</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-01T12:17:31+08:00">
+                2017-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Front-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Javascript/Javascript-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript-Core</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="为什么要新添加这两种数据结构"><a href="#为什么要新添加这两种数据结构" class="headerlink" title="为什么要新添加这两种数据结构"></a>为什么要新添加这两种数据结构</h1><p><code>Set</code>用来解决集合中每个值只能有唯一的值，所以set中在添加的值的时候涉及值相等判断，<code>-0</code>,<code>+0</code>应被当作不同的值对待，但在最新的 ECMAScript 6规范中这点已被更改，所以Set中<code>-0</code>,<code>+0</code>都是<code>0</code>；虽然<code>NaN!=NaN</code>，但在set中也只能被添加一次。</p>
+<a id="more"></a>
+<p><code>Map</code>和对象有以下几点不同</p>
+<ul>
+<li>对象有<code>prototype</code>，如果给对象实例上添加了和原型上一样的属性值，则访问不到原型上的那个值了</li>
+<li>对象的键可以是字符串和<code>Symbols</code>，<code>Map</code>的键可以是任意类型，包括函数，对象或者其他原始类型</li>
+<li>可以轻易的通过<code>Map</code>的<code>size</code>属性来获得<code>Map</code>的大小，要获得对象的大小需要手动编码计数获得</li>
+</ul>
+<p><code>Map</code>和<code>Set</code>在新建时都可直接传入可迭代对象，而传入Map中对象的元素必须是键值对的形式。set实例对象和map实例对象都是可迭代对象，通过<code>for...of</code>遍历时，因为es6在设计这两种结构的时候，添加会保存顺序，所以会按添加的顺序遍历出来，相比对象字面量和数组字面量，Map和Set实例提供了更多的方法</p>
+<h1 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h1><p>set，在数学概念中称为”集合”。集合在我们上初中时候就已经学过，著名的三大特性为确定性，互异性，无序性。es6中的set也刚好有这三种特性，并且也可以轻松实现集合中的交集，并集，差集。</p>
+<h2 id="属性和方法"><a href="#属性和方法" class="headerlink" title="属性和方法"></a>属性和方法</h2><h3 id="静态属性"><a href="#静态属性" class="headerlink" title="静态属性"></a>静态属性</h3><ul>
+<li>Set.length：值为0</li>
+</ul>
+<h3 id="原型属性"><a href="#原型属性" class="headerlink" title="原型属性"></a>原型属性</h3><ul>
+<li>set.size：返回set对象中值的个数</li>
+</ul>
+<h3 id="原型方法"><a href="#原型方法" class="headerlink" title="原型方法"></a>原型方法</h3><ul>
+<li>set.add(value)：添加指定的值，若重复则不添加，返回set实例对象</li>
+<li>set.has(value)：判断是否有指定的值，返回boolean值</li>
+<li>set.delete(value)：删除指定的值，返回boolean值</li>
+<li>set.clear()：删除所有的值</li>
+<li>set.keys()/set.values()/<code>set[@@iterator]()</code>：将set对象中每个元素的值按插入序取出来作为新的迭代器对象的值并返回</li>
+<li>set.entries()：将set对象中每个元素按插入序取出来组合成[value,value]数组的形式作为新的迭代器对象的值并返回</li>
+<li><code>set.forEach(cb[, thisArg])</code>：cb函数中对set对象中的每个值按插入序进行操作，如果传入第二个参数，将作为cb函数中this的值</li>
+</ul>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><h3 id="实现数组的去重"><a href="#实现数组的去重" class="headerlink" title="实现数组的去重"></a>实现数组的去重</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> a = [<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>];</div><div class="line"><span class="keyword">let</span> s = [...new <span class="built_in">Set</span>(a)]; <span class="comment">// Set(5) &#123;1, 2, 3, 4, 5&#125;</span></div><div class="line"><span class="comment">// or let s = Array.from(new Set(a))</span></div></pre></td></tr></table></figure>
+<h3 id="并集的实现"><a href="#并集的实现" class="headerlink" title="并集的实现"></a>并集的实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> f = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]);</div><div class="line"><span class="keyword">let</span> v = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]);</div><div class="line"><span class="comment">// 通过去重的方式获得两个集合的并集</span></div><div class="line"><span class="keyword">let</span> union = <span class="keyword">new</span> <span class="built_in">Set</span>([...f, ...v]) <span class="comment">// Set(4) &#123;1, 2, 3, 4&#125;</span></div></pre></td></tr></table></figure>
+<h3 id="交集的实现"><a href="#交集的实现" class="headerlink" title="交集的实现"></a>交集的实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> f = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]);</div><div class="line"><span class="keyword">let</span> v = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]);</div><div class="line"><span class="comment">// 将其中一个集合置为数组，通过数组的filter方法找到另一个集合中有的值得到交集</span></div><div class="line"><span class="keyword">let</span> intersect = <span class="keyword">new</span> <span class="built_in">Set</span>([...f].filter(<span class="function"><span class="params">x</span> =&gt;</span> v.has(x))) <span class="comment">// Set(2) &#123;2, 3&#125;</span></div></pre></td></tr></table></figure>
+<h3 id="差集的实现"><a href="#差集的实现" class="headerlink" title="差集的实现"></a>差集的实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> f = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]);</div><div class="line"><span class="keyword">let</span> v = <span class="keyword">new</span> <span class="built_in">Set</span>([<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]);</div><div class="line"><span class="comment">// 将其中一个集合置为数组，通过数组的filter方法找到另一个集合中没有的值得到差集</span></div><div class="line"><span class="keyword">let</span> difference = <span class="keyword">new</span> <span class="built_in">Set</span>([...f].filter(<span class="function"><span class="params">x</span> =&gt;</span> !v.has(x))) <span class="comment">// Set(1) &#123;1&#125;</span></div></pre></td></tr></table></figure>
+<p>根据上述的例子，我们也看到了Set和Array之间是如何互相转化，利用各自的方法和属性可以巧妙而简洁的写出想要的功能</p>
+<hr>
+<h1 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h1><h2 id="属性和方法-1"><a href="#属性和方法-1" class="headerlink" title="属性和方法"></a>属性和方法</h2><h3 id="静态属性-1"><a href="#静态属性-1" class="headerlink" title="静态属性"></a>静态属性</h3><ul>
+<li>Map.length：值为0</li>
+</ul>
+<h3 id="原型属性-1"><a href="#原型属性-1" class="headerlink" title="原型属性"></a>原型属性</h3><ul>
+<li>map.size：map实例对象上键值对的个数</li>
+</ul>
+<h3 id="原型方法-1"><a href="#原型方法-1" class="headerlink" title="原型方法"></a>原型方法</h3><ul>
+<li>map.get(key)：如果能找到的话，返回key对应的value，否则返回undefined</li>
+<li>map.set(key, value)：为map实例添加指定的key-value对，返回map实例对象</li>
+<li>map.has(key)：根据指定的key查找是否有关联的value，返回boolean值</li>
+<li>map.delete(key)：根据指定的key查找是否有关联的value，有的话删除并返回true，没有的话返回false</li>
+<li>map.clear()：清空map实例对象的所有key-value对</li>
+<li>map.keys()：将map对象的每个元素中的key按插入序取出来作为新的迭代器对象的值并返回</li>
+<li>map.values()：将map对象的每个元素中的value按插入序取出来作为新的迭代器对象的值并返回</li>
+<li>map.entries()/<code>map[@@iterator]()</code>：将map对象中每个元素按插入序取出来组合成[key,value]数组的形式作为新的迭代器对象的值并返回</li>
+<li><code>map.forEach(cb[, thisArg])</code>：与set方法的forEach使用一样</li>
+</ul>
+<h2 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h2><h3 id="set添加值"><a href="#set添加值" class="headerlink" title="set添加值"></a>set添加值</h3><h4 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h4><p>添加基本类型值的时候，如果<code>set</code>方法传入的<code>key</code>相等，会覆盖掉上次的值，这里也同样涉及到值相等的判断，对于基本类型值，只要两个值严格相等，<code>Map</code>将其视为一个键，<code>undefined</code>和<code>null</code>也是两个不同的键。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> m = <span class="keyword">new</span> <span class="built_in">Map</span>();</div><div class="line">m.set(<span class="number">0</span>,<span class="number">0</span>); <span class="comment">// Map(1) &#123;0 =&gt; 0&#125;</span></div><div class="line">m.set(<span class="number">-0</span>,<span class="number">0</span>); <span class="comment">// Map(1) &#123;0 =&gt; 0&#125;</span></div><div class="line">m.set(<span class="literal">true</span>, <span class="number">1</span>); <span class="comment">// Map(2) &#123;0 =&gt; 0, true =&gt; 1&#125;</span></div><div class="line">m.set(<span class="string">'true'</span>, <span class="number">1</span>); <span class="comment">// Map(2) &#123;0 =&gt; 0, true =&gt; 1, 'true' =&gt; 1&#125;</span></div></pre></td></tr></table></figure></p>
+<h4 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h4><p>添加引用类型值的时候，Map的键根据内存地址来判断是否是相等的值，也就是说即使传入了两个空对象，但是这两个对象分配的地址不同，也会被Map添加两次，如果我们使用Map，以对象作为键名，可以避免与其他人的命名冲突(思考：对象中为防止命名冲突，新增了 Symbol 类型，那 Symbol 能用于 Map 对象中的键吗？)<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> m = <span class="keyword">new</span> <span class="built_in">Map</span>();</div><div class="line">m.set(&#123;&#125;,<span class="number">1</span>); <span class="comment">// Map(1) &#123;Object &#123;&#125; =&gt; 1&#125;</span></div><div class="line">m.set(&#123;&#125;,<span class="number">2</span>); <span class="comment">// Map(2) &#123;Object &#123;&#125; =&gt; 1, Object &#123;&#125; =&gt; 2&#125;</span></div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/es6/" rel="tag"># es6</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/20/chrome插件开发/" rel="next" title="chrome插件开发">
+                <i class="fa fa-chevron-left"></i> chrome插件开发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/01/如何写出健壮的代码/" rel="prev" title="如何写出健壮的代码">
+                如何写出健壮的代码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要新添加这两种数据结构"><span class="nav-number">1.</span> <span class="nav-text">为什么要新添加这两种数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Set"><span class="nav-number">2.</span> <span class="nav-text">Set</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#属性和方法"><span class="nav-number">2.1.</span> <span class="nav-text">属性和方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#静态属性"><span class="nav-number">2.1.1.</span> <span class="nav-text">静态属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型属性"><span class="nav-number">2.1.2.</span> <span class="nav-text">原型属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型方法"><span class="nav-number">2.1.3.</span> <span class="nav-text">原型方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用"><span class="nav-number">2.2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现数组的去重"><span class="nav-number">2.2.1.</span> <span class="nav-text">实现数组的去重</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并集的实现"><span class="nav-number">2.2.2.</span> <span class="nav-text">并集的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#交集的实现"><span class="nav-number">2.2.3.</span> <span class="nav-text">交集的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#差集的实现"><span class="nav-number">2.2.4.</span> <span class="nav-text">差集的实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Map"><span class="nav-number">3.</span> <span class="nav-text">Map</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#属性和方法-1"><span class="nav-number">3.1.</span> <span class="nav-text">属性和方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#静态属性-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">静态属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型属性-1"><span class="nav-number">3.1.2.</span> <span class="nav-text">原型属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型方法-1"><span class="nav-number">3.1.3.</span> <span class="nav-text">原型方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意点"><span class="nav-number">3.2.</span> <span class="nav-text">注意点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#set添加值"><span class="nav-number">3.2.1.</span> <span class="nav-text">set添加值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本类型"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">基本类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引用类型"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">引用类型</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
