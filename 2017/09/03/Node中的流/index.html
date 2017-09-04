@@ -107,7 +107,7 @@
 <meta property="og:image" content="http://yoursite.com/images/node/streams.jpeg">
 <meta property="og:image" content="http://yoursite.com/images/node/streams_events.jpeg">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*HI-mtispQ13qm8ib5yey3g.png">
-<meta property="og:updated_time" content="2017-09-04T16:02:41.000Z">
+<meta property="og:updated_time" content="2017-09-04T17:18:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Node中的流">
 <meta name="twitter:description" content="Node.js 流是出了名的难用，难理解。近几年，工程师创造了大量与流有关的包，目的是想让我们更简单的使用流。但是这篇文章中，将关注于原生的Node.js流API。">
@@ -485,7 +485,19 @@
 <p>然而，流也能直接通过事件来被消费。下面是一个简单的例子，等同于用<code>pipe</code>方法做的读和写数据。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// readable.pipe(writable)</span></div><div class="line"></div><div class="line">readable.on(<span class="string">'data'</span>, chunk =&gt; writable.write(chunk));</div><div class="line"></div><div class="line">readable.on(<span class="string">'end'</span>, () =&gt; writable.end());</div></pre></td></tr></table></figure>
 <p>下面是可读流和可写流中一些重要的事件和函数</p>
-<p>|可读流|可写流|<br>|事件|事件|<br>|–|–|<br>|data|drain|<br>|end|finish|<br>|error|error|<br>|close|close|<br>|readable|pipe/unpipe|<br>|函数|函数|<br>|pipe(),unpipe()|write()|<br>|read(),unshift(),resume()|end()|<br>|pause(),isPaused()|cork(),uncork()|<br>|setEncoding()|setDefaultEncoding()|</p>
+<!-- |可读流|可写流|
+|事件|事件|
+|--|--|
+|data|drain|
+|end|finish|
+|error|error|
+|close|close|
+|readable|pipe/unpipe|
+|函数|函数|
+|pipe(),unpipe()|write()|
+|read(),unshift(),resume()|end()|
+|pause(),isPaused()|cork(),uncork()|
+|setEncoding()|setDefaultEncoding()| -->
 <p>这些事件和函数在某种程度上是有关系的因为他们总是被一起使用。</p>
 <p><img src="/images/node/streams_events.jpeg" alt="流事件和函数"></p>
 <p>可读流中最重要的事件有：</p>
