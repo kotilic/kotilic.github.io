@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Node.js高级系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="理解Node.js其中最重要的概念之一是处理多连接和用户回调的并发模型(concurrency model)。这也是作为Node.js天生非阻塞的特性。">
+<meta name="keywords" content="Node.js高级系列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node并发模型和事件循环">
+<meta property="og:url" content="http://yoursite.com/2017/09/02/Node并发模型和事件循环/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="理解Node.js其中最重要的概念之一是处理多连接和用户回调的并发模型(concurrency model)。这也是作为Node.js天生非阻塞的特性。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/node/event_loop.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/event_loop.gif">
+<meta property="og:image" content="http://yoursite.com/images/node/event_loop2.jpeg">
+<meta property="og:updated_time" content="2017-09-04T16:03:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node并发模型和事件循环">
+<meta name="twitter:description" content="理解Node.js其中最重要的概念之一是处理多连接和用户回调的并发模型(concurrency model)。这也是作为Node.js天生非阻塞的特性。">
+<meta name="twitter:image" content="http://yoursite.com/images/node/event_loop.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/02/Node并发模型和事件循环/"/>
+
+
+
+
+
+  <title>Node并发模型和事件循环 | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/02/Node并发模型和事件循环/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Node并发模型和事件循环</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-02T21:17:42+08:00">
+                2017-09-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Back-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/Node-js/" itemprop="url" rel="index">
+                    <span itemprop="name">Node.js</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>理解Node.js其中最重要的概念之一是处理多连接和用户回调的并发模型(concurrency model)。这也是作为Node.js天生非阻塞的特性。</p>
+<a id="more"></a>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>在Node，这个模型基于事件模型<code>libuv</code>，就像Ruby的<code>Event Machine</code>，或者Python的<code>Twisted</code>。在Node，这个事件模型通过被称为<code>Event Loop</code>的东西所组织。</p>
+<p>慢的<code>I/O</code>操作被事件和回调所处理，因此它们不会在运行时阻塞主单线程执行。</p>
+<p>Node中一切都是依靠这个概念，因此完全理解它及其重要。</p>
+<h1 id="什么是I-O？"><a href="#什么是I-O？" class="headerlink" title="什么是I/O？"></a>什么是I/O？</h1><p>I/O是input/output的缩写，但是到底是什么意思？</p>
+<p>I/O被用来标记CPU中的一个进程和CPU外的任何东西之间的一种通信。包括内存，硬盘，网络，甚至其他进程。这个进程通过信号或者消息与其他外部的东西进行通信。当它们这个进程接受时，这些信号就是输入，当被这个进程发出去的时候，就是输出。术语I/O被过度使用了，因为原始地，几乎每个发生在电脑内外的操作都是一个I/O操作。但是在Node的架构内，术语I/O被用来指代访问硬盘和网络资源，这些都是所有操作中耗时最多的操作。针对计算机程序中最大的浪费来自等待这些I/O操作完成的不争的事实，Node的事件循环(Event Loop)应运而生。我们有很多方法来处理来自慢操作的请求。</p>
+<p>我们可以同步地处理，这是最简单的方式，但是也是最糟糕的因为一个请求阻塞其他的请求。</p>
+<p>我们可以从OS中<code>fork</code>一个新的进程来处理每个请求，但是面临大量请求的时候扩展性也不太可能很好。</p>
+<p>处理这些请求最流行的方式是线程。我们可以开启一个新的线程来处理每个请求。但是线程间开始访问共享资源时线程的程序会变得相当复杂。</p>
+<p>需要流行的库和框架使用线程。例如，Apache是多线程的，通常为每个请求创建一个线程。另一方面，它主要的替代品，Nginx是单线程的，就像Node，消除了由多线程带来的超载并且针对共享资源简化了代码。</p>
+<p>单线程的框架比如Node，使用了事件循环来处理慢速的I/O操作请求，不会阻塞主线程运行时。这是Node中最重要的概念，那么事件循环到底是怎么工作的？</p>
+<h1 id="事件循环-Event-Loop"><a href="#事件循环-Event-Loop" class="headerlink" title="事件循环(Event Loop)"></a>事件循环(Event Loop)</h1><p>最简单可以用一行来定义事件循环：</p>
+<blockquote>
+<p>The entity that handles external events and converts them into callback invocations<br>处理外部事件的实体，把它们转为回调调用</p>
+</blockquote>
+<p>我们来看另一个定义：</p>
+<blockquote>
+<p>A loop that picks events from the event quene and pushes their callbacks to the call stack<br>从事件队列中拿事件并且把这个事件对应的回调函数推到调用栈的循环</p>
+</blockquote>
+<p>在没有首先理解要处理的数据结构之前很难理解事件循环</p>
+<p><img src="/images/node/event_loop.jpeg" alt="event loop"><br>事件循环第一个要理解的是，当执行一个脚本的时候，Node自动运行，所以我们不需要手动的运行事件循环。事件循环使得异步回调程序风格成为可能。如果没有回调的时候，Node将退出事件循环。事件循环也在浏览器中有所表现，和Node很像。</p>
+<p>为了理解事件循环，我们需要理解列表中所有的成员，我们需要理解它们是如何交互的。</p>
+<p>V8有一块区域叫做栈，下一个模块中要详细说明。还有一块区域叫堆，堆很简单，就是内存中存储的变量所在地。基本上就是VM给不同任务分配的内存。例如，当我们调用一个函数时，堆中的一块区域被分配作为这个函数的局部作用域。堆和栈都是 <em>运行时引擎</em> 的一部分，不是Node本身。</p>
+<p>Node围绕OS操作增加了一些API，比如<code>timers</code>,<code>emitters</code>,<code>wrappers</code>。也提供了事件队列和使用了<code>libuv</code>库的事件循环。事件循环，就像名字所阐述的，是一个简单的循环，工作在事件队列和调用栈之间。</p>
+<p>下来说明其他实体概念来更好的理解事件循环。</p>
+<h1 id="调用栈"><a href="#调用栈" class="headerlink" title="调用栈"></a>调用栈</h1><p>V8调用栈简单说就是一系列函数。栈是FILO的数据结构，可以弹出栈的顶层元素是我们最后推进栈的元素。在V8调用栈，这些元素是函数，因为Javascript是单线程的。只有一个栈，一次只能做一件事情，如果栈正在执行什么东西，在那个单线程中其他事情不会发生。当我们调用互相调用的多个函数，自然就形成了一个栈，然后我们回溯函数调用直到第一个调用。还记得如果不用递归表达式要实现可递归的东西你需要使用一个栈吗？那是因为一个正常的递归函数不管怎样都要使用一个栈。</p>
+<p>让我们浏览一个简单的例子来阐述当我们调用函数时，栈中发生了什么</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> add = <span class="function">(<span class="params">a,b</span>) =&gt;</span> a+b;</div><div class="line"><span class="keyword">const</span> double = <span class="function"><span class="params">a</span> =&gt;</span> add(a,b);</div><div class="line"><span class="keyword">const</span> printDouble = <span class="function"><span class="params">a</span> =&gt;</span> &#123;</div><div class="line">    <span class="keyword">const</span> output = double(a);</div><div class="line">    <span class="built_in">console</span>.log(output);</div><div class="line">&#125;</div><div class="line"></div><div class="line">printDouble(<span class="number">9</span>);</div></pre></td></tr></table></figure>
+<p>我们假设这些函数由一个立即调用函数表达式包裹。当我们运行这个代码，V8使用栈来记录程序正在执行的位置。每次我们进入一个程序，它被推入栈中，每次从函数中返回时，它被弹出栈。就是这么简单，所以我们以IIFE调用开始，也就是一个匿名函数。这个IIFE函数定义了其他函数，但是仅仅执行<code>printDouble</code>。<code>printDouble</code>被推入栈，<code>printDouble</code>调用<code>double</code>，因此我们把<code>double</code>推入栈，<code>double</code>调用<code>add</code>，我们把<code>add</code>推入栈，直到现在，我们仍旧执行所有的函数。我们还没有返回它们中的任何一个。当我们从<code>add</code>中返回时，我们把<code>add</code>弹出栈。然后我们从<code>double</code>中返回，把<code>double</code>弹出栈。现在，继续在<code>printDouble</code>中执行，我们进入了一个新的函数调用，<code>console.log</code>，因为它没有调用其他函数，立即被推到栈中。然后我们从<code>printDouble</code>中返回，最终匿名函数也从栈中弹出。</p>
+<p>注意每次一个函数是如何被加入进栈的，在同一级别变量和局部变量也被加进去了。你有时会听到术语栈框架或者堆栈结构，指的是函数，它的参数和局部变量。我想当确定你之前见过调用栈，不是在Node里而是在浏览器中。每次你得到一个错误，控制台将会展示调用栈。</p>
+<p>如果一个函数没有退出条件递归调用自身你觉得会发生什么？相当于一个无限循环，但是是在栈里面。我们将一直把同一个函数推入栈，直到达到V8栈大小，V8将打印出这条错误:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Maximum call stack size exceeded.</div></pre></td></tr></table></figure></p>
+<h1 id="处理慢操作"><a href="#处理慢操作" class="headerlink" title="处理慢操作"></a>处理慢操作</h1><p>只要在栈中处理的操作快一些，单线程那就没有问题。但是当我们开始着手处理慢操作的时候，我们只有一个线程的事实变成一个问题。因为这些慢操作将阻塞执行。我将用一个例子来模拟。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> slowAdd = <span class="function">(<span class="params">a,b</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;<span class="number">999999999</span>; i++) &#123;&#125;</div><div class="line">    <span class="keyword">return</span> a+b;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> a = slowAdd(<span class="number">3</span>,<span class="number">3</span>);</div><div class="line"><span class="keyword">const</span> b = slowAdd(<span class="number">4</span>,<span class="number">4</span>);</div><div class="line"><span class="keyword">const</span> c = slowAdd(<span class="number">5</span>,<span class="number">5</span>);</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(a);</div><div class="line"><span class="built_in">console</span>.log(b);</div><div class="line"><span class="built_in">console</span>.log(c);</div></pre></td></tr></table></figure>
+<p>例子中，次数很多的循环语句就是一个阻塞操作。这里<code>slowAdd</code>函数将花费几秒的时间来完成，依赖于具体的硬件。那么当我们进入到一个像<code>slowAdd</code>这样的阻塞的函数中调用栈发生了什么？</p>
+<p>同样的，第一次调用，匿名函数进栈，<code>slowAdd(3,3)</code>进栈。然后等待V8完成没用的阻塞循环并且从<code>slowAdd(3,3)</code>中返回并且同时弹出栈。然后进入<code>slowAdd(4,4)</code>，并且等待，完成，返回，弹出。对于<code>slowAdd(5,5)</code>是同样的步骤。然后进入<code>console.log</code><br>行，这个很快因此无阻塞，因此入栈，弹栈，入栈，弹栈，入栈，弹栈。最后匿名函数弹出栈。</p>
+<p>当Node等待每个<code>slowAdd</code>的时候，它什么也做不了。这就是阻塞式程序，Node的事件循环存在的意义就是为了避免这种程序。</p>
+<h1 id="回调实际如何工作"><a href="#回调实际如何工作" class="headerlink" title="回调实际如何工作"></a>回调实际如何工作</h1><p>我们都知道Node API围绕回调设计。我们把一个函数作为参数传递给另一个函数。这些参数函数迟点会被执行。</p>
+<p>例如，如果我们改变我们的<code>slowAdd</code>函数，把它放到<code>setTimeout</code>中</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> slowAdd = <span class="function">(<span class="params">a,b</span>) =&gt;</span> &#123;</div><div class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(a,b);</div><div class="line">    &#125;, <span class="number">5000</span>)</div><div class="line">&#125;;</div><div class="line">slowAdd(<span class="number">3</span>,<span class="number">3</span>);</div><div class="line">slowAdd(<span class="number">4</span>,<span class="number">4</span>);</div></pre></td></tr></table></figure>
+<p><code>setTimeout</code>中的第一个参数就是回调函数。我们看看这次调用栈发生了什么。匿名函数入栈，首次调用的<code>slowAdd(3,3)</code>入栈，<code>slowAdd</code>调用了<code>setTimeout</code>，<code>setTimeout</code>入栈，因为<code>setTimeout</code>没有调用其他函数，但是有一个函数参数，它立即被弹出栈，所以<code>slowAdd(3,3)</code>执行结束。然后继续，<code>slowAdd(4,4)</code>入栈和第一个过程一样，最后都弹出栈。但是不知怎的，<code>console.log(6)</code>入栈然后执行，之后，<code>console.log(8)</code>入栈并执行。</p>
+<p>要理解最后两个调用出现在调用栈。我们得理解像<code>setTimeout</code>这样的API调用不是V8的一部分，是由Node本身提供的，就像浏览器会提供这个一样，是很重要的。与事件循环异步地工作看起来很奇怪，这也是为什么它在调用栈中表现得有一点奇怪。我们再谈谈事件队列。有时候称为消息队列或者回调队列。简单地列出了要被处理的事物，让我们称这些事物为事件。当我们在队列中存储一个事件，就存储了一个与之对应的函数。这个函数就是我们知道的回调函数。刚才说<code>setTimeout</code>是Node的一部分，当调用<code>setTimeout</code>的时候，Node调用<code>timer</code>来计时，时间到的时候就将一个回调放到事件队列中，队列是FIFO的数据结构。调用该回调函数将把它推到栈中。</p>
+<p>事件循环做的事情相当简单。就是监视栈和事件队列。当栈是空的，队列不空时(队列中有等待被运行的事件)。它将按顺序从队列中让事件出队列，然后把对应的回调函数推入栈。它称为事件循环，因为它循环这个简单的逻辑直到事件队列为空为止。栈和事件队列都为空的时候，Node会退出进程。所有的API背后的工作原理都是它。一些进程将异步处理一定的I/O，持续追踪一个回调，当它结束时，它将把回调放在事件队列中排队。时刻保持清醒，任何慢的代码在栈中执行将阻塞事件循环。同样地，如果我们不注意事件队列中事件的数量，我们将压垮队列，使得事件循环和调用栈都忙碌。作为一个Node开发者，对于阻塞和非阻塞代码还有很多重要的东西要理解。</p>
+<p><img src="/images/node/event_loop.gif" alt="事件循环gif"></p>
+<h1 id="setImmediate和process-nextTick"><a href="#setImmediate和process-nextTick" class="headerlink" title="setImmediate和process.nextTick"></a>setImmediate和process.nextTick</h1><p>当timer延迟时间为0毫秒的时候会发生什么？差不多是一样的事情。</p>
+<p>前面的步骤类似。因为这个循环，timers在0毫秒之后没有真的在执行，还是在我们处理完栈之后。所以如果在栈中有一个慢操作，这些timers就得等了。在一个timer中定义的延迟并不是一个保证的时间来执行，但是确实是执行的最小的时，timer将在这个延迟的最小值之后执行。</p>
+<p><img src="/images/node/event_loop2.jpeg" alt="不同阶段"><br>Node的事件循环有多个阶段，timers运行在其中一个，然而大部分的I/O操作运行在其他阶段。Node有一个特殊的timer——setImmediate，运行在事件循环的一个单独的阶段。</p>
+<p>几乎等同于0ms timer，除了其他一些情况，setImmediate将实际上优先于setTimeout的0ms</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'js'</span>);</div><div class="line"></div><div class="line">fs.readFile(__filename, () =&gt; &#123;</div><div class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'timeout'</span>);</div><div class="line">    &#125;, <span class="number">0</span>);</div><div class="line">    setImmediate(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'immediate'</span>);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>当你想某个东西在事件循环的下一个tick被执行，最好用setImmediate</p>
+<p>Node中还有一个API，叫做<code>process.nextTick</code>和<code>setImmediate</code>看起来一样，但是Node在下一次循环不会执行它的回调，因此这个名字令人误解，但也没法去改。</p>
+<p><code>process.nextTick</code>技术上来说不是循环的一部分。并且它不关心循环的阶段。在当前操作完成之后，Node处理由nextTick注册的回调，在事件循环继续之前。这个既有用，又危险，要小心对待，尤其在递归使用<code>process.nextTick</code>的时候。</p>
+<p>使用nextTick一个好的例子是与一个标准函数做对比</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">const fs = require('fs');</div><div class="line"></div><div class="line">function fileSize(fileName, cb) &#123;</div><div class="line">    if(typeof fileName !== 'string') &#123;</div><div class="line">        return cb(new TypeError('argument should be string'));</div><div class="line">    &#125;</div><div class="line">    fs.stat(fileName, (err, stats) &#123;</div><div class="line">        if(err) return cb(err);</div><div class="line">        cb(null, stats.size);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">fileSize(__filename, (err, size) =&gt; &#123;</div><div class="line">    if(err) throw err;</div><div class="line">    console.log(`Size in KB: $&#123;size/1024&#125;`);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">console.log('Hello!');</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node-js高级系列/" rel="tag"># Node.js高级系列</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/01/Node事件驱动架构/" rel="next" title="Node事件驱动架构">
+                <i class="fa fa-chevron-left"></i> Node事件驱动架构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/03/Node中的流/" rel="prev" title="Node中的流">
+                Node中的流 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是I-O？"><span class="nav-number">2.</span> <span class="nav-text">什么是I/O？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事件循环-Event-Loop"><span class="nav-number">3.</span> <span class="nav-text">事件循环(Event Loop)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用栈"><span class="nav-number">4.</span> <span class="nav-text">调用栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理慢操作"><span class="nav-number">5.</span> <span class="nav-text">处理慢操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回调实际如何工作"><span class="nav-number">6.</span> <span class="nav-text">回调实际如何工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#setImmediate和process-nextTick"><span class="nav-number">7.</span> <span class="nav-text">setImmediate和process.nextTick</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

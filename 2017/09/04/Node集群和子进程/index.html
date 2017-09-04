@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Node.js高级系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="单线程、无阻塞性能相当好，但是一个CPU中的一个进程还是没法应对更多的负载。不管你使用多么强大的服务器，单线程总是有限度的。">
+<meta name="keywords" content="Node.js高级系列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node集群和子进程">
+<meta property="og:url" content="http://yoursite.com/2017/09/04/Node集群和子进程/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="单线程、无阻塞性能相当好，但是一个CPU中的一个进程还是没法应对更多的负载。不管你使用多么强大的服务器，单线程总是有限度的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/node/child_process.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/multi_cpu.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/round_robin.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/request_persec.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/work_process.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/request_persec2.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/node/shared_data.jpeg">
+<meta property="og:updated_time" content="2017-09-04T16:06:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node集群和子进程">
+<meta name="twitter:description" content="单线程、无阻塞性能相当好，但是一个CPU中的一个进程还是没法应对更多的负载。不管你使用多么强大的服务器，单线程总是有限度的。">
+<meta name="twitter:image" content="http://yoursite.com/images/node/child_process.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/04/Node集群和子进程/"/>
+
+
+
+
+
+  <title>Node集群和子进程 | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/04/Node集群和子进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Node集群和子进程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-04T21:23:49+08:00">
+                2017-09-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Back-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/Node-js/" itemprop="url" rel="index">
+                    <span itemprop="name">Node.js</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>单线程、无阻塞性能相当好，但是一个CPU中的一个进程还是没法应对更多的负载。不管你使用多么强大的服务器，单线程总是有限度的。</p>
+<a id="more"></a>
+<h1 id="扩展Node-js应用程序"><a href="#扩展Node-js应用程序" class="headerlink" title="扩展Node.js应用程序"></a>扩展Node.js应用程序</h1><p>Node运行在单线程的事实并不意味着我们不能利用多进程，当然，多个机器也是可以的。使用多进程是增大Node.js应用规模唯一的方法。Node.js被设计用于构建多节点的分布式应用。在应用程序生命周期中，可扩展性不是一开始就要思考的东西。</p>
+<p>负载是我们扩展我们应用最重要的原因，但不是唯一原因。我们扩展程序也为了达到增加可实用性，容错性的目的。</p>
+<p>在谈论Node.js的扩展性之前，我们来讲一下可扩展性的不同策略，在扩展一个应用的时候主要有三件事情。</p>
+<p>(Cloning)扩展一个应用最简单的是多次克隆它，用每个克隆的实例来减轻负载。会消耗很多开发时间但很高效。本文着重说这个方法。</p>
+<p>(Decomposing)我们也会通过分解来扩展应用，基于函数性和服务性。意味着不同的代码库有多个不同的应用，有时它们也会有专用的数据库和UI。这个策略和一个术语<code>microservice</code>关联，<code>micro</code>指示这些服务应该尽可能小。但是实际情况下服务的大小没那么重要，服务间的强制松散耦合和高内聚才是更重要的。这个策略的实现经常不是很简单，可能会造成意料不到的问题。但是优势也是很明显的。</p>
+<p>(Splitting)第三个策略是把这些应用拆分成多个实例，每个实例负责应用数据的一部分。这个策略在数据库操作中经常被叫做水平分割(horizontal partitioning)，或者分片(sharding)。数据划分在每个操作之前需要检查步骤来决定应用的哪个实例来使用这些数据。例如，我们想基于国家或语言来划分我们的用户，我们需要首先检查这个信息。</p>
+<p>成功地扩展一个应用应该最终都实现了这三种策略，Node.js使得实现变得简单。</p>
+<h1 id="子进程事件和标准I-O"><a href="#子进程事件和标准I-O" class="headerlink" title="子进程事件和标准I/O"></a>子进程事件和标准I/O</h1><p>我们可以使用<code>child_process</code>模块来轻易地造出一个子进程，这些子进程在一个通信系统中可以互相通信。</p>
+<p>通过在子进程中调用任何系统命令，<code>child_process</code>模块使得我们可以访问操作系统函数。控制输入流，监听输出流。我们可以控制传给系统命令的参数，可以对输出做我们想做的事情。例如，将一个命令的输出连接到另一个命令，因为这些命令的所有的输入和输出都可以使用Node流。<br><img src="/images/node/child_process.jpeg" alt="Node和OS"></p>
+<p>下面用到的例子的命令都是基于Linux的，在Windows上，你需要找到替代的命令。</p>
+<p>Node中创建一个子进程有四种方式</p>
+<ul>
+<li>spawn()</li>
+<li>fork()</li>
+<li>exec()</li>
+<li>execFile()</li>
+</ul>
+<p>spawn方法在新进程中运行一个命令，我们可以使用它来把任何参数传递给系统命令。</p>
+<p>spawn方法的结果是一个ChildProcess实例，并且继承自EventEmitter，意味着我们可以为子进程对象的事件注册监听器。</p>
+<p>子进程结束的事件是<code>end</code>，可以接受两个参数<code>code</code>和<code>signal</code>。这是子进程退出的代码和信号变量。当子进程正常退出的时候，<code>signal</code>为null。</p>
+<p>其他的事件还有<code>disconnect</code>、<code>error</code>、<code>message</code>、<code>close</code></p>
+<p>当父进程手动调用子进程的<code>disconnect</code>方法时，子进程的<code>disconnect</code>事件触发。<br>如果进程不能被spawn或者kill的时候，<code>error</code>事件触发。<br>当子进程使用<code>process.send()</code>来发送消息的时候，<code>message</code>事件触发。<code>process.send()</code>也是父子进程如何通信的原理。<br>当子进程<code>stdio</code>流关闭时，<code>close</code>事件触发。每个子进程都会有三个<code>stdio</code>流。<code>child.stdin</code>、<code>child.stdout</code>、<code>child.stderr</code></p>
+<p><code>close</code>事件不同于<code>exit</code>事件，因为多个子进程或许共享同一个stdio流，并且一个子进程退出不代表流关闭。</p>
+<p>不像在正常的进程里，在子进程中<code>stdout/stderr</code>是可读流，<code>stdin</code>是可写流。和正常流刚好相反。在流中我们也能够监听事件，最重要的是，可读流中我们可以监听<code>data</code>事件，当执行命令的时候，会得到命令的输出结果和遇到的错误。<code>stdout/stderr</code>的监听器将记录主进程的标准输出和错误。</p>
+<p>我们给spawn通过第二个参数调用任何命令，第二个参数是一个要传给第一个参数命令的所有选项。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123; spawn &#125; = <span class="built_in">require</span>(<span class="string">'child_process'</span>);</div><div class="line"></div><div class="line"><span class="keyword">const</span> child = spawn(<span class="string">'find'</span>, [<span class="string">'.'</span>, <span class="string">'-type'</span>, <span class="string">'f'</span>]);</div><div class="line"><span class="comment">// 等同于在shell中执行find . -type f。将会列出当前目录下所有的目录和文件</span></div></pre></td></tr></table></figure>
+<p>当遇到错误的时候，监听的<code>stderr</code>将会打印出错误，并且程序以特定代码退出。</p>
+<p>子进程的<code>stdin</code>是一个可写流，可以使用它来给我们要执行的命令发送一些用户输入的指令。就像任何可写流一样，最简单的方法就是用pipe</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123; spawn &#125; = <span class="built_in">require</span>(<span class="string">'child_process'</span>);</div><div class="line"><span class="comment">// 统计行数，单词数，字符数</span></div><div class="line"><span class="keyword">const</span> child = spawn(<span class="string">'wc'</span>);</div><div class="line"></div><div class="line">process.stdin.pipe(child.stdin);</div><div class="line"></div><div class="line">child.stdout.on(<span class="string">'data'</span>, data =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`child stdout\n<span class="subst">$&#123;data&#125;</span>`</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>我们也可以把标准输入连接到多个进程的输出，就像在Linux上做的那样</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123; spawn &#125; = <span class="built_in">require</span>(<span class="string">'child_process'</span>);</div><div class="line"><span class="comment">// 统计行数，单词数，字符数</span></div><div class="line"><span class="keyword">const</span> find = spawn(<span class="string">'find'</span>, [<span class="string">'.'</span>, <span class="string">'-type'</span>, <span class="string">'f'</span>]);</div><div class="line"><span class="keyword">const</span> wc = spawn(<span class="string">'wc'</span>, [<span class="string">'-l'</span>]);</div><div class="line"></div><div class="line">find.stdout.pipe(wc.stdin);</div><div class="line"></div><div class="line">wc.stdout.on(<span class="string">'data'</span>, data =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Number of files <span class="subst">$&#123;data&#125;</span>`</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h1 id="Shell命令exec-和execFile"><a href="#Shell命令exec-和execFile" class="headerlink" title="Shell命令exec()和execFile()"></a>Shell命令exec()和execFile()</h1><p>默认地，spawn方法不能创建一个shell来执行我们传递的命令，比起exec方法来说稍微有效率一些，因为exec会创建一个shell。exec方法主要有另一个不同之处。它缓冲了命令执行后的结果并且把所有的值传给了回调</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123; exec &#125; = <span class="built_in">require</span>(<span class="string">'child_process'</span>);</div><div class="line"></div><div class="line">exec(<span class="string">'find . -type -f | wc -l'</span>, (err, stdout, stderr) =&gt; &#123;</div><div class="line">    <span class="keyword">if</span>(err) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">`exec error: <span class="subst">$&#123;err&#125;</span>`</span>);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Number of files <span class="subst">$&#123;stdout&#125;</span>`</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>上面的例子可以看出，将结果传给了回调中的 stdout。我们也可以看出使用 exec 的便捷性。所以当我们需要使用shell语法并且返回的结果不是很大的时候，exec 是一个好的选择。而spawn适用于结果返回的数据大的情况下，我们可以用流来处理。</p>
+<p>我们也可以让子进程继承父进程的的<code>stdio</code>对象</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123; spawn &#125; = <span class="built_in">require</span>(<span class="string">'child_process'</span>);</div><div class="line"></div><div class="line"><span class="keyword">const</span> child = spawn(<span class="string">'find'</span>, [<span class="string">'.'</span>, <span class="string">'-type'</span>, <span class="string">'-f'</span>], &#123;</div><div class="line">    <span class="attr">stdio</span>: <span class="string">'inhert'</span>,</div><div class="line">    <span class="comment">// shell: true,</span></div><div class="line">    <span class="comment">// cwd: '/Users/xxx/Documents',</span></div><div class="line">    <span class="comment">// env: &#123;ANSWER: 42&#125;</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>执行上述代码之后，<code>data</code>事件将在process.stdout上触发，使得结果立即展现出来。如果我们想使用shell语法，并且也能利用spawn方法带给我们使用流的便捷性，我们可以使用shell选项，设置为true。和exec不同的是，仍旧不会缓冲结果。这是最棒的两个使用。</p>
+<p>我们也可以使用其他参数，<code>cwd</code>来改变脚本执行的目录， <code>env</code>来指定在新进程中可见的环境变量。默认的是process.env。因此所有命令都能执行当前脚本。<code>detach</code>使子进程独立地运行在父进程中，实际的效果依赖于OS。Windows中，detached子进程有自己的console窗口，Linux中detached子进程成为进程组和session的首领。如果在detached子进程中调用<code>unref</code>方法，父进程将独立于子进程退出。当子进程计算量大的时候，要把它放到后台来运行这个特点极其有用。此时，stdio应该设置为ignore，因为stdio也应该独立于父进程。</p>
+<p>如果不想用shell来执行一个文件，使用execFile方法。和exec差不多，只是不会使用shell，更高效一点。但是当使用execFile的时候io direction和file clobbing就不被支持了。在Windows中，一些文件比如.bat,.cmd不能自己执行，这也文件也不能被exec<br>File执行。exec或者设置了shell为true的spawn可以做到。</p>
+<p>所有的child_process模块函数都有同步阻塞的版本，他们会等待直到子进程退出。对简化脚本任务或者其他启动程序任务来说有用，在其他情况下最好避免。</p>
+<h1 id="fork-函数"><a href="#fork-函数" class="headerlink" title="fork()函数"></a>fork()函数</h1><p>fork函数是spawn函数的变体。spawn和fork最大的不同是当使用fork的时候会在子进程中建立一个通信信道。因此我们可以在父子进程间使用<code>send</code>方法来交换信息。和EventEmitter模块做的事情很类似。</p>
+<h1 id="Cluster模块"><a href="#Cluster模块" class="headerlink" title="Cluster模块"></a>Cluster模块</h1><p><img src="/images/node/multi_cpu.jpeg" alt="多CPU"><br>cluster模块在多CPU环境上实现负载均衡。基于fork函数，允许我们和CPU数量一样多的次数fork主应用进程，然后它将在forked好的进程中把主进程的所有请求接管过来并且均衡他们。</p>
+<p>cluster是Node中实现克隆扩展策略的模块，但是仅仅在一台机器上。因此当你有一台拥有很多资源或者可以不费吹灰之力就能添加更多的资源到这个机器而不是新的机器的大机器时，那么cluster是一个很棒的选择来实现快速的克隆扩展策略。</p>
+<p>甚至小的机器都会有多核，或者你根本不担心你Node应用程序上的负载，不管怎样你都应该开启cluster模块来增加你服务器的可利用率和容错率。当你使用一个进程管理比如pm2的时候，简单到只需要提供一个参数就能够运行了。但是我会给你展示原生的closet模块是怎么使用的，并解释它的工作原理。</p>
+<p>我们创建一个master进程，这个master进程fork许多工作进程并且管理他们。每个工作进程代表了我们想要扩展的应用程序的实例。所有的请求被master进程处理并且master进程来决定哪个工作进程来处理这个请求。</p>
+<p>master进程的工作很简单，它实际上采用了<code>round-robin</code>算法来选择工作进程。这是所有平台上默认支持的，除了Windows。也可以被全局修改来让操作系统处理负载均衡。<code>round-robin</code>算法给所有进程轮流分发载荷。第一个请求被转发给第一个工作进程，第二个请求给下一个工作进程，等等。当到达最后一个的时候，算法又从头开始计算。这个是最简单最实用的负载均衡算法。然而，并不是唯一的一个。更多的特征算法允许分配优先级，选择最小的负载服务器或者反应速度最快的那一个。<br><img src="/images/node/round_robin.jpeg" alt="工作原理图"></p>
+<h1 id="在HTTP服务器上实现负载均衡"><a href="#在HTTP服务器上实现负载均衡" class="headerlink" title="在HTTP服务器上实现负载均衡"></a>在HTTP服务器上实现负载均衡</h1><p>我们将使用cluster模块来对http服务器实现克隆和复杂均衡</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// server.js</span></div><div class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</div><div class="line"><span class="keyword">const</span> pid = process.pid;</div><div class="line"></div><div class="line">http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;<span class="number">1e7</span>; i++) &#123;</div><div class="line">        res.end(<span class="string">`Handled by process <span class="subst">$&#123;pid&#125;</span>`</span>);</div><div class="line">    &#125;</div><div class="line">&#125;).listen(<span class="number">8000</span>, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Started process <span class="subst">$&#123;pid&#125;</span>`</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>上面的例子是稍微修改过的简单服务器例子，来模拟响应前的CPU工作。为了验证我们创建的均衡起作用，我在HTTP响应中使用process的id来区分应用的哪一个实例在处理这个请求。</p>
+<p>在我们创建一个cluster来克隆这个服务器变成多个工作进程之前，我们来测试一下每秒钟这个服务器能够处理多少个请求并作为基准，等着一会来对比。我将使用ApacheBench工具，得到的结果视不同的平台而定。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 10s建立200次连接</div><div class="line">ab -c200 -t10 http://localhost:8000</div></pre></td></tr></table></figure></p>
+<p><img src="/images/node/request_persec.jpeg" alt="每秒处理请求数"></p>
+<p>cluster有一个isMaster的标志，查看是否被作为master进程来加载。第一次执行这个文件的时候，我们将执行master进程，isMaster是true。这种情况下，我们可以通知master进程来根据CPU数目多少来多次fork服务器，调用cluster.fork即可。当执行这个方法后，当前的主模块cluster.js再次运行，此时isMaster为false，此时isWorker为true。当应用程序以work运行时，就开始做实际的工作了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// cluster.js</span></div><div class="line"><span class="keyword">const</span> cluster = <span class="built_in">require</span>(<span class="string">'cluster'</span>);</div><div class="line"><span class="keyword">const</span> os = rquire(<span class="string">'os'</span>); <span class="comment">// read the number of the cpu cores we can work with.</span></div><div class="line"></div><div class="line"><span class="keyword">if</span>(cluster.isMaster) &#123;</div><div class="line">    <span class="keyword">const</span> cpus = os.cpus().length;</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;cpus; i++) &#123;</div><div class="line">        cluster.fork();</div><div class="line">    &#125;</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="built_in">require</span>(<span class="string">'./server'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行之后，可以看到开启了8个进程。要注意，这些都是完全不同的Node.js进程，每个工作进程都有它自己的事件循环和内存空间。</p>
+<p><img src="/images/node/work_process.jpeg" alt="运行效果"></p>
+<p>当再次在浏览器中访问时，我们就能看到不同的进程id。注意到这些进程id并不是按顺序的，这是因为cluster模块对选择下一个工作进程做了优化。但是负载确实被均衡了。使用ab命令在做一次测试。<br><img src="/images/node/request_persec2.jpeg" alt="每秒处理请求数"></p>
+<h1 id="消息广播到工作线程"><a href="#消息广播到工作线程" class="headerlink" title="消息广播到工作线程"></a>消息广播到工作线程</h1><p>master进程和工作进程之间的通信很简单，因为本质上，cluster模块仅仅使用child_process.fork API，也意味着我们在master进程和工作进程之间打开了一个通信信道。</p>
+<h1 id="实用性和零宕机"><a href="#实用性和零宕机" class="headerlink" title="实用性和零宕机"></a>实用性和零宕机</h1><p>在Node应用里运行一个单例还是多个的问题之一是当实例崩溃时，需要重启，那么这两个动作之间就会有宕机时间，即使进程是自动运行。这也暗示了一种情况，当服务器不得不重启来部署新的代码时。一个实例的时候，将会有宕机时间将会影响系统的实用性。当我们有多个实例时，系统的实用性可以通过增加几行代码轻易地提高。</p>
+<p>为了在服务器进程模拟一个随机崩溃，可以用setTimeout随机时间之后触发process.exit。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// server.js</span></div><div class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</div><div class="line"></div><div class="line">http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">    process.exit(<span class="number">1</span>);</div><div class="line">&#125;, <span class="built_in">Math</span>.random() * <span class="number">10000</span>);</div><div class="line"></div><div class="line"><span class="comment">// cluster.js</span></div><div class="line"><span class="keyword">const</span> cluster = <span class="built_in">require</span>(<span class="string">'cluster'</span>);</div><div class="line"><span class="keyword">const</span> os = <span class="built_in">require</span>(<span class="string">'os'</span>);</div><div class="line"></div><div class="line"><span class="keyword">if</span>(cluster.isMaster) &#123;</div><div class="line">    <span class="keyword">const</span> cpus = os.cpus().length;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;cpus; i++) &#123;</div><div class="line">        cluster.fork();</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// there is the exit event</span></div><div class="line">    cluster.on(<span class="string">'exit'</span>, (worker, code, signal) =&gt; &#123;</div><div class="line">        <span class="keyword">if</span>(code !== <span class="number">0</span> &amp;&amp; !worker.exitedAfterDisconnect) &#123;</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">`Worker <span class="subst">$&#123;worker.id&#125;</span> crashed.`</span> +</div><div class="line">                        <span class="string">'Starting a new worker...'</span>);</div><div class="line">            cluster.fork();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="built_in">require</span>(<span class="string">'./server'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在任意worker上执行kill或者disconnect，exitedAfterDisconnect将会被置为true。有了上面的代码，再也不用担心某个进程挂掉了，master守卫者将为我们留意这些进程。如果我们想重启所有的工作线程呢，例如当部署新代码时。</p>
+<p>我们现在有多个实例在运行，因此不必一起重启他们，我们可以简单地一次重启一个，当一个工作线程正在重启时，允许其他的工作线程继续服务请求。实现起来也很简单。我们不想在启动时重启master进程，那么我就需要一个方法来让master进程重启worker进程。Linux系统中，我们可以监听一个USER信号，比如SIGUSR2，我们用kill命令作用在进程id，并传递那个signal表示不是要kill 掉这个进程。这种情况下，master进程不会被kill，那么我们就可以做接下来的事情了。为什么不用SIGUSR1是因为Node的debugger占用了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// cluster.js</span></div><div class="line"><span class="keyword">const</span> cluster = <span class="built_in">require</span>(<span class="string">'cluster'</span>);</div><div class="line"><span class="keyword">const</span> os = <span class="built_in">require</span>(<span class="string">'os'</span>);</div><div class="line"></div><div class="line"><span class="keyword">if</span>(cluster.isMaster) &#123;</div><div class="line">    <span class="keyword">const</span> cpus = os.cpus().length;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;cpus; i++) &#123;</div><div class="line">        cluster.fork();</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Master PID: <span class="subst">$&#123;process.pid&#125;</span>`</span>);</div><div class="line">    <span class="comment">// there is the exit event</span></div><div class="line">    cluster.on(<span class="string">'exit'</span>, (worker, code, signal) =&gt; &#123;</div><div class="line">        <span class="comment">// 表示意外退出</span></div><div class="line">        <span class="keyword">if</span>(code !== <span class="number">0</span> &amp;&amp; !worker.exitedAfterDisconnect) &#123;</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">`Worker <span class="subst">$&#123;worker.id&#125;</span> crashed.`</span> +</div><div class="line">                        <span class="string">'Starting a new worker...'</span>);</div><div class="line">            cluster.fork();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    process.on(<span class="string">'SIGUSR2'</span>, () =&gt; &#123;</div><div class="line">        <span class="keyword">const</span> workers = <span class="built_in">Object</span>.values(cluster.workers);</div><div class="line"></div><div class="line">        <span class="keyword">const</span> restartWorker = <span class="function">(<span class="params">workerIndex</span>) =&gt;</span> &#123;</div><div class="line">            <span class="keyword">const</span> worker = workers[workerIndex];</div><div class="line">            <span class="keyword">if</span>(!worker) <span class="keyword">return</span>; <span class="comment">// 边界条件要考虑到</span></div><div class="line">            worker.on(<span class="string">'exit'</span>, () =&gt; &#123;</div><div class="line">                <span class="keyword">if</span>(!worker.exitedAfterDisconnect) <span class="keyword">return</span>;</div><div class="line">                <span class="built_in">console</span>.log(<span class="string">`Exited process <span class="subst">$&#123;worker.process.id&#125;</span>`</span>);</div><div class="line">                <span class="comment">// 因为都是异步的， 所以得等一个线程fork完成再进行下一个</span></div><div class="line">                cluster.fork().on(<span class="string">'listening'</span>, () =&gt; &#123;</div><div class="line">                    restartWorker(workerIndex++);</div><div class="line">                &#125;);</div><div class="line">            &#125;);</div><div class="line">            worker.disconnect();</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        restartWorker(<span class="number">0</span>);</div><div class="line">    &#125;);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="built_in">require</span>(<span class="string">'./server'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以用现成的包PM2来守卫线程。</p>
+<h1 id="共享状态和粘性的负载均衡"><a href="#共享状态和粘性的负载均衡" class="headerlink" title="共享状态和粘性的负载均衡"></a>共享状态和粘性的负载均衡</h1><p>花费时间能做出好东西，当我们对一个node应用进行了负载均衡，我们已经失去了一些只有在单线程上才有的特性。这个问题和我们熟知的其他语言比如线程安全很像。线程安全是关于线程间的共享的数据，在我们 这个例子中是不同worker线程间的共享的数据。</p>
+<p>例如，cluster启动后，我们不再在内存中缓存东西，因为每个worker线程有自己的内存空间。因此如果我们在每个worker内存中缓存东西，其他worker访问不到。</p>
+<p>如果我们需要缓存一些东西在cluster中，我们不得不使用一个独立的实体并且从所有的worker中用实体的API读或写数据。这个实体可以是一个数据库服务或如果你想使用in-memory缓存，你可以使用Redis或你可以创建一个对所有其他worker线程都能互相通信的带有read/write API，专用的Node进程。不要认为这是一个缺点，如果你还记得扩展策略的话，对你的应用缓存需求使用一个单独的实体是为扩展分解你的app的一部分。因此即使你运行在单核线程上也应这么做。</p>
+<p>相比缓存，当你运行在cluster上时，状态性通信通常变成了一个问题。因为通信对同一个worker无法保证，在其他worker上创建一个状态性信道不是一个办法。最常见的解决方案是验证用户。</p>
+<p>在cluster内，验证请求到达负载均衡，也就是到达某一个worker线程。例子中给了A，A现在识别用户的状态。但是当同一个用户再次请求的时候，master线程将把它分派给另一个worker，例子中是B，B中没有对用户做过认证。因此在一个即时内存中保持授权用户会话的引用不再有用。这个问题可以有多种解决方案。<br><img src="/images/node/shared_data.jpeg" alt="共享数据"></p>
+<p>通过把这些会话信息存储在一个共享的数据库或者Redis节点，我们可以简单地在这些worker进程中共享状态，但是应用这个方法需要改变一些代码，并且有时不是很好的选择。如果你想达到共享会话而不能动你的代码时，这个具有较少的侵略性，但不是很有效率，你可以使用众所周知的粘性负载均衡。</p>
+<p>这个很容易实现，因为有很多负载均衡实现者都支持这个策略。思想也很简单，当一个worker实例验证了用户，我们把认证记录保存在负载均衡层。然后，当同一个用户发送一个新的请求时，我们在这个记录里做一次查询，找到哪个服务有认证的会话信息，然后将请求发到那个服务上，而不是让主线程重新分配一个。这种方式下，server的代码不用改变，但是我们对用户认证也没有从负载均衡处获得好处，所以如果你没有其他选择，那就仅用粘性负载均衡吧。cluster模块不支持粘性负载均衡。但是其他负载均衡者可以被配置来实现。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node-js高级系列/" rel="tag"># Node.js高级系列</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/03/Node中的流/" rel="next" title="Node中的流">
+                <i class="fa fa-chevron-left"></i> Node中的流
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展Node-js应用程序"><span class="nav-number">1.</span> <span class="nav-text">扩展Node.js应用程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#子进程事件和标准I-O"><span class="nav-number">2.</span> <span class="nav-text">子进程事件和标准I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell命令exec-和execFile"><span class="nav-number">3.</span> <span class="nav-text">Shell命令exec()和execFile()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#fork-函数"><span class="nav-number">4.</span> <span class="nav-text">fork()函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cluster模块"><span class="nav-number">5.</span> <span class="nav-text">Cluster模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在HTTP服务器上实现负载均衡"><span class="nav-number">6.</span> <span class="nav-text">在HTTP服务器上实现负载均衡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息广播到工作线程"><span class="nav-number">7.</span> <span class="nav-text">消息广播到工作线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实用性和零宕机"><span class="nav-number">8.</span> <span class="nav-text">实用性和零宕机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#共享状态和粘性的负载均衡"><span class="nav-number">9.</span> <span class="nav-text">共享状态和粘性的负载均衡</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -13,13 +13,6 @@
 
 
 
-  
-  
-    
-    
-  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
-  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
-
 
 
 
@@ -108,7 +101,7 @@
 <meta property="og:site_name" content="Hello,My friend">
 <meta property="og:description" content="…（此处应有乌鸦飞过）运算符当我和别人聊天的时候，别人说了一句让我很无语的话的时候，我会输入…，或者double…，es6新特性中，三个点竟成了运算符，我们来看看到底es6委员会辛辛苦苦到底做了什么，会不会让我们让我们无语的输入…">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-31T06:56:46.000Z">
+<meta property="og:updated_time" content="2017-09-02T07:39:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="es6之三个点运算符">
 <meta name="twitter:description" content="…（此处应有乌鸦飞过）运算符当我和别人聊天的时候，别人说了一句让我很无语的话的时候，我会输入…，或者double…，es6新特性中，三个点竟成了运算符，我们来看看到底es6委员会辛辛苦苦到底做了什么，会不会让我们让我们无语的输入…">
@@ -410,7 +403,7 @@
 <h3 id="new构造函数"><a href="#new构造函数" class="headerlink" title="new构造函数"></a>new构造函数</h3><p>当用new调用构造函数时，不能直接用数组和apply，但是有了扩展运算符，数组就可以轻松调用了</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> dateFields = [<span class="number">1970</span>, <span class="number">0</span>, <span class="number">1</span>];  <span class="comment">// 1 Jan 1970</span></div><div class="line"><span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>(...dateFields);</div></pre></td></tr></table></figure>
 <h2 id="数组字面量"><a href="#数组字面量" class="headerlink" title="数组字面量"></a>数组字面量</h2><p>扩展运算符后的变量必须为可迭代对象，在可迭代对象内部通过for…of遍历值，所以可以方便的进行一些操作</p>
-<h3 id="合并数组"><a href="#合并数组" class="headerlink" title="合并数组"></a>合并数组</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> arr1 = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</div><div class="line"><span class="keyword">var</span> arr2 = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>];</div><div class="line">arr2.unshift[...arr1];<span class="comment">// or arr1.push(...arr2);</span></div><div class="line"><span class="comment">//==========================//</span></div><div class="line"><span class="keyword">var</span> arr3 = [...arr1, ...arr2];</div></pre></td></tr></table></figure>
+<h3 id="合并数组"><a href="#合并数组" class="headerlink" title="合并数组"></a>合并数组</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> arr1 = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</div><div class="line"><span class="keyword">var</span> arr2 = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>];</div><div class="line">arr2.unshift(...arr1);<span class="comment">// or arr1.push(...arr2);</span></div><div class="line"><span class="comment">//==========================//</span></div><div class="line"><span class="keyword">var</span> arr3 = [...arr1, ...arr2];</div></pre></td></tr></table></figure>
 <h3 id="复制数组"><a href="#复制数组" class="headerlink" title="复制数组"></a>复制数组</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</div><div class="line"><span class="keyword">var</span> arr2 = [...arr];</div><div class="line">arr2.push(<span class="number">4</span>); <span class="comment">// [1,2,3,4]</span></div><div class="line"><span class="comment">//===========================//</span></div><div class="line"><span class="keyword">var</span> arr3 = [&#123;<span class="attr">a</span>:<span class="number">1</span>&#125;,&#123;<span class="attr">b</span>:<span class="number">1</span>&#125;,&#123;<span class="attr">c</span>:<span class="number">1</span>&#125;];</div><div class="line"><span class="keyword">var</span> arr4 = [...arr3];</div><div class="line">arr4[<span class="number">0</span>].a = <span class="number">2</span> <span class="comment">// arr3: [&#123;a:2&#125;,&#123;b:1&#125;,&#123;c:1&#125;]</span></div><div class="line"><span class="comment">// 等同于arr.slice(),Object.assign(),并且均为浅拷贝，对于引用类型需要注意</span></div></pre></td></tr></table></figure>
 <h3 id="生成数组"><a href="#生成数组" class="headerlink" title="生成数组"></a>生成数组</h3><p>根据扩展运算符可以跟数组的原理，可以通过解构赋值，将数组反求出来<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> [first, ...rest] = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>];</div><div class="line"><span class="comment">// first 1</span></div><div class="line"><span class="comment">// rest [2,3,4]</span></div><div class="line"><span class="comment">// 注意：解构反求数组的参数只能放到最后一位，否则会报错</span></div><div class="line"><span class="keyword">var</span> [...head, tail] = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>] <span class="comment">// Uncaught SyntaxError: Rest element must be last element</span></div></pre></td></tr></table></figure></p>
 <p>当然扩展运算符不止可以用于数组，只要是可迭代对象都可以，所以另一种用途就是将其他可迭代对象转化为数组，比如<code>Set</code>，<code>Map</code>，<code>Generator</code></p>
@@ -478,8 +471,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/08/31/适配器模式/" rel="prev" title="适配器模式">
-                适配器模式 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/08/29/Node.js web编程/" rel="prev" title="Node.js web编程">
+                Node.js web编程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -553,7 +546,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -564,7 +557,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -575,7 +568,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

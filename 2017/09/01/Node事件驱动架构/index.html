@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Node.js高级系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Node处理异步调用原始的方法叫做回调函数(callbacks)。">
+<meta name="keywords" content="Node.js高级系列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node事件驱动架构">
+<meta property="og:url" content="http://yoursite.com/2017/09/01/Node事件驱动架构/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="Node处理异步调用原始的方法叫做回调函数(callbacks)。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-04T15:53:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node事件驱动架构">
+<meta name="twitter:description" content="Node处理异步调用原始的方法叫做回调函数(callbacks)。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/01/Node事件驱动架构/"/>
+
+
+
+
+
+  <title>Node事件驱动架构 | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/01/Node事件驱动架构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Node事件驱动架构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-01T21:52:22+08:00">
+                2017-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Back-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-End/Node-js/" itemprop="url" rel="index">
+                    <span itemprop="name">Node.js</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Node处理异步调用原始的方法叫做回调函数(callbacks)。</p>
+<a id="more"></a>
+<h1 id="回调、Promises、Async-Await"><a href="#回调、Promises、Async-Await" class="headerlink" title="回调、Promises、Async/Await"></a>回调、Promises、Async/Await</h1><p>很久之前，在Javascript原生支持promises和async/await特性之前。我们看看异步回调如何与事件循环一起工作的，但是在一般定义中回调仅仅是作为参数传入到另一个函数中的函数，当然之所以可以这么做，是因为函数在javascript是一等公民。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> doSomething = <span class="function">(<span class="params">cb</span>) =&gt;</span> &#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;;</div><div class="line">doSomething(<span class="function">(<span class="params">err,data</span>) =&gt;</span> &#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这里有一点很重要，代码中回调函数并没有表明是一个异步调用。在前面的几个文章里，我们看到了一个函数是怎样同步、异步地调用回调并且讲解了用<code>process.nextTick</code>怎么避免出现那样的情况。我们来看一个用回调写的经典的异步函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line"><span class="keyword">const</span> readFileAsArray = <span class="function"><span class="keyword">function</span>(<span class="params">file, cb</span>) </span>&#123;</div><div class="line">    fs.readFile(file, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span>(err) <span class="keyword">return</span> cb(err);</div><div class="line"></div><div class="line">        <span class="keyword">const</span> lines = data.toString().trim().split(<span class="string">'\n'</span>);</div><div class="line">        cb(<span class="literal">null</span>, lines);</div><div class="line">    &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">readFileAsArray(<span class="string">'./numbers'</span>, (err,lines) =&gt; &#123;</div><div class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</div><div class="line"></div><div class="line">    <span class="keyword">const</span> numbers = lines.map(<span class="built_in">Number</span>);</div><div class="line">    <span class="keyword">const</span> oddNumbers = numbers.filter(<span class="function"><span class="params">number</span> =&gt;</span> number % <span class="number">2</span> ===<span class="number">1</span>);</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'odd number count: '</span>, oddNumbers.length);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p><code>readFileAsArray</code>需要一个文件和一个回调，读文件，将buffer转成字符串，以回车符分离成数组穿传回调。假设我们现在有四个数字的一个文件，调用<code>readFileAsArray</code>时，把字符串转为数字，并且计算偶数个数。</p>
+<p>简单的例子，让我们看到 <em>回调中错误优先，并且我们把回调作为最后的参数传递给函数</em>。这是写这类函数的法则，我们需要遵守。因为大家写Node都会那样写。因此不能把回调作为第一个参数传递，或者把定义中的<code>cb(null,lines)</code>去掉。</p>
+<p>在现代Javascript中，我们有promise对象。Promises是替代回调的一个异步API。特点就是不需要把回调作为参数传入并且在同一个地方处理错误。一个promise对象允许我们单独处理成功和失败的场景，允许我们链式多个异步调用，而不是层级嵌套。下来用promise改写上面的例子。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line"><span class="keyword">const</span> readFileAsArray = <span class="function"><span class="keyword">function</span>(<span class="params">file</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</div><div class="line">        fs.readFile(file, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</div><div class="line">            <span class="keyword">if</span>(err) <span class="keyword">return</span> reject(err);</div><div class="line"></div><div class="line">            <span class="keyword">const</span> lines = data.toString().trim().split(<span class="string">'\n'</span>);</div><div class="line">            resolve(lines);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">readFileAsArray(<span class="string">'./numbers'</span>)</div><div class="line">    .then(lines = &gt; &#123;</div><div class="line">        <span class="keyword">const</span> numbers = lines.map(<span class="built_in">Number</span>);</div><div class="line">        <span class="keyword">const</span> oddNumbers = numbers.filter(<span class="function"><span class="params">number</span> =&gt;</span> number % <span class="number">2</span> ===<span class="number">1</span>);</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'odd numbers count: '</span>, oddNumbers.length);</div><div class="line">    &#125;)</div><div class="line">    .catch(<span class="built_in">console</span>.error);</div></pre></td></tr></table></figure>
+<p><code>.then</code>给我们访问lines数组的入口，我们能够在这里处理它。要处理错误，我们有一个catch调用来打印错误。函数定义部分，我们用promise包裹了我们之前的代码段，promise对象暴露了两个函数，resolve和reject，接下来用reject调用替代<code>cb(err)</code>，用resolve替代<code>cb(null,lines)</code>，之前的<code>cb</code>参数定义，也不需要了。</p>
+<p>官方对于异步调用的解决方案是回调，如果你想既有回调，又想有promise接口，许多流行的node包已经做了这些工作。非常简单，不要替换掉回调，保留它们并且增加一个promise调用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line"><span class="keyword">const</span> readFileAsArray = <span class="function"><span class="keyword">function</span>(<span class="params">file,cb=(</span>) =&gt; </span>&#123;&#125;) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</div><div class="line">        fs.readFile(file, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</div><div class="line">            <span class="keyword">if</span>(err) &#123;</div><div class="line">                reject(err)</div><div class="line">                <span class="keyword">return</span> cb(err);   </div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">const</span> lines = data.toString().trim().split(<span class="string">'\n'</span>);</div><div class="line">            resolve(lines);</div><div class="line">            cb(<span class="literal">null</span>, lines);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">readFileAsArray(<span class="string">'./numbers'</span>)</div><div class="line">    .then(lines = &gt; &#123;</div><div class="line">        <span class="keyword">const</span> numbers = lines.map(<span class="built_in">Number</span>);</div><div class="line">        <span class="keyword">const</span> oddNumbers = numbers.filter(<span class="function"><span class="params">number</span> =&gt;</span> number % <span class="number">2</span> ===<span class="number">1</span>);</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'odd numbers count: '</span>, oddNumbers.length);</div><div class="line">    &#125;)</div><div class="line">    .catch(<span class="built_in">console</span>.error);</div><div class="line"></div><div class="line">readFileAsArray(<span class="string">'./numbers'</span>, (err,lines) =&gt; &#123;</div><div class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</div><div class="line"></div><div class="line">    <span class="keyword">const</span> numbers = lines.map(<span class="built_in">Number</span>);</div><div class="line">    <span class="keyword">const</span> oddNumbers = numbers.filter(<span class="function"><span class="params">number</span> =&gt;</span> number % <span class="number">2</span> ===<span class="number">1</span>);</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'odd number count: '</span>, oddNumbers.length);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这种情况下唯一要做的事是给这个回调参数设置一个默认值，为了代码被promise接口所使用。我们可以使用一个简单默认的空函数放在参数中，那么现在这个代码就可以既运行在promise接口，也可以运行在回调参数上。</p>
+<p>当需要在一个异步函数中做循环的时候，增加一个promise接口使你的代码变得更加容易。如果是回调，就会变得很冗余，Promises改善了一点点，generators也做了一点改进。但是解决异步问题更加优雅的替代方案是async函数，这个函数允许像同步一样写异步代码，当我们需要在循环中处理事情时，使得易读性增强。用async/await来改写上面的例子</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">countOdd</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">const</span> lines = <span class="keyword">await</span> readFileAsArray(<span class="string">'./numbers'</span>);</div><div class="line">        <span class="keyword">const</span> numbers = lines.map(<span class="built_in">Number</span>);</div><div class="line">        <span class="keyword">const</span> oddCount = numbers.filter(<span class="function"><span class="params">number</span> =&gt;</span> number % <span class="number">2</span> ===<span class="number">1</span>).length;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'odd numbers count: '</span>, oddCount);</div><div class="line">    &#125; <span class="keyword">catch</span>(err) &#123;</div><div class="line">        <span class="built_in">console</span>.error(err);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">countOdd();</div></pre></td></tr></table></figure>
+<p>在普通的函数前面增加<code>async</code>，在内部使用了<code>await</code>，就像同步调用<code>readFileAsArray</code>一样，之后继续执行后面的代码。为了处理错误，我们需要用<code>try/catch</code>包裹代码段，因此不要忘记这点。要执行所有的代码，需要加上<code>--harmony-async-await</code>标志，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">~ node --harmony-async-await async-promise.js</div></pre></td></tr></table></figure>
+<h1 id="EventEmitter"><a href="#EventEmitter" class="headerlink" title="EventEmitter"></a>EventEmitter</h1><p><code>EventEmitter</code>是Node中促进对象间通信的模块。<code>EventEmitter</code>是Node异步事件驱动架构的核心(<code>event-driven</code>)。许多Node内置模块都是从<code>EventEmitter</code>继承而来。</p>
+<p>概念很简单，<code>emitter</code>对象触发命名事件，导致监听函数被调用。一个<code>emitter</code>对象有两个特征，触发命名事件和注册监听函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;&#125;</div><div class="line"><span class="keyword">const</span> logger = <span class="keyword">new</span> Logger();</div><div class="line">logger.emit(<span class="string">'event'</span>);</div><div class="line">logger.on(<span class="string">'event'</span>,listenerFunc);</div></pre></td></tr></table></figure>
+<p>触发一个事件是当某些条件发生时的一个信号，这个条件一般是触发对象的状态改变。我们用<code>on</code>方法增加了一个监听函数，一旦触发对象触发了关联的事件之后，这些监听函数就会被调用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">WithLog</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</div><div class="line">    execute(tashFunc) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'Before executing'</span>);</div><div class="line">        <span class="keyword">this</span>.emit(<span class="string">'begin'</span>);</div><div class="line">        taskFunc();</div><div class="line">        <span class="keyword">this</span>.emit(<span class="string">'end'</span>);</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'After executing'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> withLog = <span class="keyword">new</span> WithLog();</div><div class="line"></div><div class="line">withLog.on(<span class="string">'begin'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'About to execute'</span>));</div><div class="line">withLog.on(<span class="string">'end'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'Done with execute'</span>));</div><div class="line"></div><div class="line">withLog.execute(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'*** Executing task ***'</span>));</div><div class="line"><span class="comment">/**</span></div><div class="line">Before executing</div><div class="line">About to execute</div><div class="line">*** Executing task ***</div><div class="line">Done with execute</div><div class="line">After executing</div><div class="line">**/</div></pre></td></tr></table></figure>
+<p>不要假设这是异步还是同步的代码，这很重要，因为如果说<code>taskFunc</code>是一个异步，我们可以用一个<code>setTimeout</code>来模拟而不用直接的函数代码，代码如下，现在看起来这行是异步的了，后面的两行也不再精确了。为了在一个异步函数执行完触发一个事件，我们可能得需要回调和promises的帮助了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">withLog.execute(<span class="function"><span class="params">()</span> =&gt;</span> setTimeout(</div><div class="line">        <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'*** Executing task ***'</span>),</div><div class="line">        <span class="number">500</span></div><div class="line">    )</div><div class="line">);</div><div class="line"><span class="comment">/**</span></div><div class="line">Before executing</div><div class="line">About to execute</div><div class="line">Done with execute</div><div class="line">After executing</div><div class="line">*** Executing task ***</div><div class="line">**/</div></pre></td></tr></table></figure>
+<p>使用事件而不是一般的回调的好处是我们能够对同一个信号通过定义多个监听函数做出多次反应。回调要完成同样的效果内部要做很多逻辑。事件对应用程序来说是一个很棒的方式来允许多个额外的插件在应用程序基础之上扩展功能。你可以把它们理解成钩子(<code>hook</code>)，在状态改变的时候可以自定义做一些事情。下面用一个异步函数改写上面的例子。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">WithTime</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</div><div class="line">    execute(asyncFunc, ...args) &#123;</div><div class="line">        <span class="built_in">console</span>.time(<span class="string">'execute'</span>);</div><div class="line">        <span class="keyword">this</span>.emit(<span class="string">'begin'</span>);</div><div class="line">        asyncFunc(...args, (err,data) =&gt; &#123;</div><div class="line">            <span class="keyword">if</span>(err) <span class="keyword">return</span> <span class="keyword">this</span>.emit(<span class="string">'error'</span>, err);</div><div class="line">            <span class="keyword">this</span>.emit(<span class="string">'data'</span>, data);</div><div class="line">            <span class="built_in">console</span>.timeEnd(<span class="string">'execute'</span>);</div><div class="line">            <span class="keyword">this</span>.emit(<span class="string">'end'</span>);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> withTime = <span class="keyword">new</span> WithTime();</div><div class="line"></div><div class="line">withTime.on(<span class="string">'begin'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'About to execute'</span>));</div><div class="line">withTime.on(<span class="string">'end'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'Done with execute'</span>));</div><div class="line"></div><div class="line">withTime.execute(fs.readFile, __filename);</div><div class="line"><span class="comment">/**</span></div><div class="line">About to execute</div><div class="line">execute: 3.188ms</div><div class="line">Done with execute</div><div class="line">*/</div></pre></td></tr></table></figure>
+<h1 id="参数，错误和监听顺序"><a href="#参数，错误和监听顺序" class="headerlink" title="参数，错误和监听顺序"></a>参数，错误和监听顺序</h1><p>在上面的例子中，有两个被触发的事件带着额外的参数，<code>error</code>触发时带了一个<code>err</code>对象，<code>data</code>事件触发时带了一个<code>data</code>对象。我们可以在命名事件之后传递我们想要的任何参数，这些参数在监听函数中都是可获得的。看下面的例子。<code>error</code>是个特殊的事件，就算我们不监听，遇到错误，Node就会自动退出。如果有监听函数，错误就会按照我们代码写的方式展示。Node也就不会崩溃或者异常退出。另一个处理异常的方法是为未捕获异常进程事件注册一个监听器。在未捕获异常我们有一个建议，我们应该让程序不管怎样都应该退出。</p>
+<p>想象一下如果有多个错误事件发生，意思是<code>uncaughtException</code>监听器会多次触发，或许对我们在里面做的清理工作会是个问题。eventemitter模块暴露了一个<code>once</code>方法，这个<code>once</code>方法仅调用一次监听器，不是在每次发生都调用。在处理未捕获异常的时候，<code>once</code>最有实际作用的地方。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">withTime.on(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Length: <span class="subst">$&#123;data.length&#125;</span>`</span>);</div><div class="line">&#125;);</div><div class="line">withTime.on(<span class="string">'error'</span>, <span class="built_in">console</span>.log(err));</div><div class="line">process.on(<span class="string">'uncaughtException'</span>, (err) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(err);</div><div class="line">    <span class="comment">// do some cleanup</span></div><div class="line">    process.exit(<span class="number">1</span>); <span class="comment">// exit anyway</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>如果我们为一个同样的事件监听多个监听器，这些监听器将会按顺序被调用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">withTime.on(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Length: <span class="subst">$&#123;data.length&#125;</span>`</span>);</div><div class="line">&#125;);</div><div class="line">withTime.on(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Charaters: <span class="subst">$&#123;data.toString()&#125;</span>`</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">withTime.prependListener(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Charaters: <span class="subst">$&#123;data.toString()&#125;</span>`</span>);</div><div class="line">&#125;);</div><div class="line"><span class="comment">// remove listener</span></div><div class="line">withTime.removeListener(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`Charaters: <span class="subst">$&#123;data.toString()&#125;</span>`</span>);</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>如果你想让你之后的监听器首先被调用，你需要使用<code>prependListener</code>来实现。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node-js高级系列/" rel="tag"># Node.js高级系列</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/31/Node.js底层网络编程/" rel="next" title="Node.js底层网络编程">
+                <i class="fa fa-chevron-left"></i> Node.js底层网络编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/02/Node并发模型和事件循环/" rel="prev" title="Node并发模型和事件循环">
+                Node并发模型和事件循环 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#回调、Promises、Async-Await"><span class="nav-number">1.</span> <span class="nav-text">回调、Promises、Async/Await</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EventEmitter"><span class="nav-number">2.</span> <span class="nav-text">EventEmitter</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数，错误和监听顺序"><span class="nav-number">3.</span> <span class="nav-text">参数，错误和监听顺序</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
