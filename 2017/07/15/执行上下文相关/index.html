@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Hello,My friend">
 <meta property="og:description" content="可执行代码段分为全局代码，函数代码，eval代码，在执行这些代码之前都会经历创建执行上下文的过程。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-31T06:56:12.000Z">
+<meta property="og:updated_time" content="2017-09-05T07:35:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="执行上下文相关">
 <meta name="twitter:description" content="可执行代码段分为全局代码，函数代码，eval代码，在执行这些代码之前都会经历创建执行上下文的过程。">
@@ -395,7 +395,7 @@
       
 
       
-        <p><strong>可执行代码段分为全局代码，函数代码，eval代码，在执行这些代码之前都会经历创建执行上下文的过程。</strong></p>
+        <p>可执行代码段分为全局代码，函数代码，eval代码，在执行这些代码之前都会经历创建执行上下文的过程。</p>
 <a id="more"></a>
 <p><strong>执行上下文：</strong><br>执行可执行代码段会创建执行上下文</p>
 <p>函数执行的时候会创建执行上下文，通过上下文栈来管理不同的栈，在函数执行的时候创建完该函数的执行上下文的时候压栈。</p>
@@ -412,7 +412,7 @@
 <p>  至此修正函数从创建到执行过程：</p>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">函数创建--&gt;保存作用域到内部属性`[[scope]]`--&gt;函数执行前的准备工作--&gt;执行上下文创建并压入执行上下文栈--&gt;执行上下文分析阶段： 复制[[scope]]属性创建作用域链 --&gt; 执行上下文分析阶段：活动对象的初始化 --&gt; 活动对象压入当前函数作用   e   域链顶端 --&gt; 函数执行，更新活动对象 --&gt; 函数上下文从上下文栈中弹出</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">函数创建--&gt;</div><div class="line">保存作用域到内部属性`[[scope]]`--&gt;</div><div class="line">函数执行前的准备工作--&gt;</div><div class="line">执行上下文创建并压入执行上下文栈--&gt;</div><div class="line">执行上下文分析阶段： 复制[[scope]]属性创建作用域链 --&gt; </div><div class="line">执行上下文分析阶段：活动对象的初始化 --&gt; </div><div class="line">活动对象压入当前函数作用域链顶端 --&gt; </div><div class="line">函数执行，更新活动对象 --&gt; </div><div class="line">函数上下文从上下文栈中弹出</div></pre></td></tr></table></figure>
 <ul>
 <li>this<br>  ecmascript的类型分为语言类型和规范类型，规范类型是指用来用算法描述ecmascript语言结构和语言类型的。包括：<code>Reference, List, Completion, Property Descriptor, Property Identifier, Lexical Environment, Environment Record</code></li>
 </ul>
