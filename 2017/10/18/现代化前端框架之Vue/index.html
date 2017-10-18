@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Vue语法相关问题记录Vue的特性 列表渲染v-for用于组件时，key必须要传 有时你可能需要为已有对象赋予多个新属性，比如使用 Object.assign() 或 _.extend()1234this.userProfile = Object.assign(&amp;#123;&amp;#125;, this.userProfile, &amp;#123;  age: 27,  favoriteColor: &apos;Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="现代化前端框架之Vue">
+<meta property="og:url" content="http://yoursite.com/2017/10/18/现代化前端框架之Vue/index.html">
+<meta property="og:site_name" content="Hello,My friend">
+<meta property="og:description" content="Vue语法相关问题记录Vue的特性 列表渲染v-for用于组件时，key必须要传 有时你可能需要为已有对象赋予多个新属性，比如使用 Object.assign() 或 _.extend()1234this.userProfile = Object.assign(&amp;#123;&amp;#125;, this.userProfile, &amp;#123;  age: 27,  favoriteColor: &apos;Vue">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-10-18T12:32:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="现代化前端框架之Vue">
+<meta name="twitter:description" content="Vue语法相关问题记录Vue的特性 列表渲染v-for用于组件时，key必须要传 有时你可能需要为已有对象赋予多个新属性，比如使用 Object.assign() 或 _.extend()1234this.userProfile = Object.assign(&amp;#123;&amp;#125;, this.userProfile, &amp;#123;  age: 27,  favoriteColor: &apos;Vue">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/18/现代化前端框架之Vue/"/>
+
+
+
+
+
+  <title>现代化前端框架之Vue | Hello,My friend</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello,My friend</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share & Improve</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-front-end">
+          <a href="/categories/Front-End" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-desktop"></i> <br />
+            
+            前端文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/18/现代化前端框架之Vue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kristof">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello,My friend">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">现代化前端框架之Vue</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-18T20:32:23+08:00">
+                2017-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/" itemprop="url" rel="index">
+                    <span itemprop="name">Front-End</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Javascript/Javascript-Library-Framework/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript-Library&Framework</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Vue语法相关问题"><a href="#Vue语法相关问题" class="headerlink" title="Vue语法相关问题"></a>Vue语法相关问题</h1><p>记录Vue的特性</p>
+<h2 id="列表渲染"><a href="#列表渲染" class="headerlink" title="列表渲染"></a>列表渲染</h2><p>v-for用于组件时，key必须要传</p>
+<p>有时你可能需要为已有对象赋予多个新属性，比如使用 Object.assign() 或 _.extend()<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.userProfile = <span class="built_in">Object</span>.assign(&#123;&#125;, <span class="keyword">this</span>.userProfile, &#123;</div><div class="line">  <span class="attr">age</span>: <span class="number">27</span>,</div><div class="line">  <span class="attr">favoriteColor</span>: <span class="string">'Vue Green'</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>v-for优先级高于v-if，所以两个一起使用的时候，可以按需渲染</strong></p>
+<h2 id="条件渲染"><a href="#条件渲染" class="headerlink" title="条件渲染"></a>条件渲染</h2><p>和v-for一样只能通过指令的形式写在dom元素或组件中(自定义组件或内置组件)</p>
+<h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2><p>这个很关键，敲黑板：只能用于插值和v-bind中！！</p>
+<p><em>坑位</em>：过滤器的实现，后面再添加</p>
+<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><p>组件上一般会绑定自己抛出的事件，如果想绑定原生事件，需要通过<code>.native</code>修饰符</p>
+<p>可以使用其他修饰符，比如<code>.enter</code>,<code>.keyup</code>减少代码量</p>
+<p>修饰符<code>.sync</code>是一个语法糖，在父组件中不需要通过v-on来监听事件，在子组件内改变了值之后还是需要显式地抛出事件，<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;comp :foo.sync=<span class="string">"bar"</span>&gt;&lt;/comp&gt; <span class="comment">// 父组件调子组件</span></div><div class="line"></div><div class="line"><span class="keyword">this</span>.$emit(<span class="string">'update:foo'</span>, newValue) <span class="comment">// 子组件抛出事件</span></div></pre></td></tr></table></figure></p>
+<p><strong>使用一些组件绑定事件的时候，如果本身的事件不行，就加.native修饰符</strong></p>
+<h2 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h2><ul>
+<li>输入框：绑定输入的值</li>
+<li>单选：绑定单选的value值</li>
+<li>复选框：单个为逻辑值，多个为value组成的数组</li>
+<li>下拉框：绑定option的value，如果option没有value，则是option的text</li>
+<li><p>表单修饰符：<code>.number</code>,<code>lazy</code>,<code>trim</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;input v-model.trim=<span class="string">"msg"</span>&gt;   <span class="comment">// 去掉空格</span></div><div class="line">&lt;input v-model.number=<span class="string">"msg"</span>&gt; <span class="comment">// 转为小数</span></div><div class="line">&lt;input v-model.lazy=<span class="string">""</span>&gt;  <span class="comment">// input触发改为change触发</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>组件实现v-model，也是语法糖，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;comp v-model=&quot;something&quot;&gt;&lt;/comp&gt;</div><div class="line"></div><div class="line">&#123;</div><div class="line">    ...</div><div class="line">    prop: [&apos;value&apos;],</div><div class="line">    methods: &#123;</div><div class="line">        change (val) &#123;</div><div class="line">            this.$emit(&apos;input&apos;, val)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>对于组件内有单选框、复选框的情况，如果按这种写法来写，需要加model属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    ...</div><div class="line">    model: &#123;</div><div class="line">        prop: &apos;checked&apos;,</div><div class="line">        event: &apos;change&apos;</div><div class="line">    &#125;,</div><div class="line">    props: &#123;</div><div class="line">        checked: Boolean,</div><div class="line">        value: String</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><p>用到的数据必须在data中先声明，如果不知道初始值，置空或者null</p>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><h3 id="组件写法"><a href="#组件写法" class="headerlink" title="组件写法"></a>组件写法</h3><p>slot是在子组件留的坑位，在父组件可以根据需求灵活地传入，包括具名插槽和作用域插槽<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">// 子组件留slot坑位</div><div class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">header</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">slot</span> <span class="attr">name</span>=<span class="string">"header"</span>&gt;</span><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">header</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">main</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">slot</span>&gt;</span><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">main</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">footer</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">slot</span> <span class="attr">name</span>=<span class="string">"footer"</span>&gt;</span><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">footer</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">// 父组件调用给子组件分发内容</div><div class="line"><span class="tag">&lt;<span class="name">app-layout</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">slot</span>=<span class="string">"header"</span>&gt;</span>这里可能是一个页面标题<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>主要内容的一个段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>另一个主要段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span> <span class="attr">slot</span>=<span class="string">"footer"</span>&gt;</span>这里有一些联系信息<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">app-layout</span>&gt;</span></div><div class="line">// 作用域插槽和具名插槽区别是一个是name,一个是text</div><div class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">slot</span> <span class="attr">name</span>=<span class="string">"item"</span></span></div><div class="line">    <span class="attr">v-for</span>=<span class="string">"item in items"</span></div><div class="line">    <span class="attr">:text</span>=<span class="string">"item.text"</span>&gt;</div><div class="line">    <span class="comment">&lt;!-- 这里写入备用内容 --&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">slot</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">my-awesome-list</span> <span class="attr">:items</span>=<span class="string">"items"</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 作用域插槽也可以是具名的 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">li</span> </span></div><div class="line">    <span class="attr">slot</span>=<span class="string">"item"</span> </div><div class="line">    <span class="attr">slot-scope</span>=<span class="string">"props"</span> </div><div class="line">    <span class="attr">class</span>=<span class="string">"my-fancy-item"</span>&gt;</div><div class="line">    &#123;&#123; props.text &#125;&#125;</div><div class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">my-awesome-list</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>vue用到其他自定义组件要在components属性中定义，从代码可读性方面，让父组件知道引用了哪些子组件</p>
+<p>要用到父组件传给子组件的数据，在子组件中定义一个局部变量然后用props初始化，主要是为了子组件改父组件传进来的值。props有以下几种写法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">props: [&apos;value&apos;]</div><div class="line">props: &#123;</div><div class="line">    value: &apos;String&apos;</div><div class="line">&#125;</div><div class="line">props: &#123;</div><div class="line">    value: &#123;</div><div class="line">        type: &apos;String&apos;,</div><div class="line">        default: &apos;hello world&apos;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="组件调用"><a href="#组件调用" class="headerlink" title="组件调用"></a>组件调用</h3><p>三种调用方式</p>
+<ul>
+<li>js代码，将组件封装成一个方法直接调用</li>
+<li>Vue指令，通过Vue注册插件的形式</li>
+<li>通过内嵌组件的显示隐藏</li>
+</ul>
+<h3 id="组件传值"><a href="#组件传值" class="headerlink" title="组件传值"></a>组件传值</h3><p>组件属性接受横杠式写法，但是组件内部接受到的变量需要转成驼峰写法</p>
+<p>子组件需要父组件异步数据初始化组件的时候，先传进来，然后赋值给对应的值，并且watch值，防止异步数据返回得很慢，并且当数据更新的时候，更新组件。这么做的原因是数据还没来，组件已经渲染成功。这种问题其实可以通过等到父组件数据到来时候再渲染子组件，Vue不建议直接通过new组件的形式(或者我不知道这种形式的写法)，通过内嵌组件的写法，我们需要通过v-if,v-for来控制组件的创建和销毁</p>
+<h2 id="组件封装方法总结"><a href="#组件封装方法总结" class="headerlink" title="组件封装方法总结"></a>组件封装方法总结</h2><p>单页面的形式引入组件的三种方式</p>
+<ul>
+<li>通过内嵌组件的方式，通过暴露在全局中或者import局部引入的组件内嵌在页面</li>
+<li>通过封装一个组件然后注册一个方法，通过传参的形式调用这个组件(参考element-ui MessageBox的实现)</li>
+<li>通过 <strong>new import进来的组件</strong>传入相应的参数来调用</li>
+</ul>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><p>自定义指令，自定义过滤器，写计算属性，混入选项，插件的写法，封装组件(slot, props, event)</p>
+<p>什么时候要写插件？插件有一个install方法</p>
+<ul>
+<li>添加全局方法或者属性，如: vue-custom-element</li>
+<li>添加全局资源，指令/过滤器/过渡等，如 vue-touch</li>
+<li>通过全局 mixin 方法添加一些组件选项，如: vue-router</li>
+<li>添加 Vue 实例方法，通过把它们添加到 Vue.prototype 上实现。</li>
+<li>一个库，提供自己的 API，同时提供上面提到的一个或多个功能，如 vue-router</li>
+</ul>
+<p>可复用组件想不重复使用，使用v-if, v-for, :key</p>
+<p>可复用路由想不重复使用，使用keep-alive的exclude属性，<strong>匹配首先检查组件自身的 name 选项，如果 name 选项不可用，则匹配它的局部注册名称 (父组件 components 选项的键值)。匿名组件不能被匹配。</strong></p>
+<p>ref绑定在普通元素上，拿到的是 <strong>dom</strong>，绑定在组件上，拿到的是组件的 <strong>实例</strong>，可以直接调用组件的方法和属性</p>
+<h2 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h2><ul>
+<li>组件中状态控制变量过多，需要大量定义这种变量使得页面很冗余</li>
+<li>keep-alive的组件，生命周期只走一遍，可以使用activated钩子函数。所以如果vue-router传值，直接定义在data中的话，param的值将会被缓存，必须在activated钩子函数中取值赋值</li>
+<li>数组通过arr[index] = newItem赋值将不会更新，通过变异方法或者this.$set来实现</li>
+<li>…</li>
+</ul>
+<h1 id="vue-router遇到的问题"><a href="#vue-router遇到的问题" class="headerlink" title="vue-router遇到的问题"></a>vue-router遇到的问题</h1><h2 id="vue-router传值"><a href="#vue-router传值" class="headerlink" title="vue-router传值"></a>vue-router传值</h2><p>对于路由路径没有定义为‘xx/:id’的路由，编程式导航，push一个params的时候，params刷新后将拿不到，如果定义为’xx/:id’的形式，则在路由组件中可以直接拿到params的值，要想刷新后拿到参数，push 的时候用query传值，但对于keep-alive组件，必须在activated钩子函数中获取param的值，如果直接写在data中，值将会被缓存</p>
+<h2 id="vue-router获取值"><a href="#vue-router获取值" class="headerlink" title="vue-router获取值"></a>vue-router获取值</h2><ol>
+<li>this.$route.params.xx</li>
+<li>this.$route.query.xx</li>
+<li>路由导航事件 beforeRouteUpdate（也是/:id的形式才有这个事件）</li>
+<li>watch $route（也是/:id的形式才能watch到）</li>
+<li>vuex（刷新后存不住数据）</li>
+<li>sessionStorage,localStorage</li>
+<li>cookie</li>
+</ol>
+<h2 id="vue-router导航守卫"><a href="#vue-router导航守卫" class="headerlink" title="vue-router导航守卫"></a>vue-router导航守卫</h2><ol>
+<li>路由独享route中可以配置beforeEnter,有三个参数，可以在当前路由中设置在进入前的一些操作</li>
+<li>router全局方法.beforeEach, afterEach，全局路由守卫，在进入每一个路由的时候都会判读</li>
+<li>组件内导航钩子，beforeRouteEnter, beforeRouteUpdate, beforeRouteLeave</li>
+<li>其他导航守卫<a href="https://router.vuejs.org/zh-cn/advanced/navigation-guards.html" target="_blank" rel="external">https://router.vuejs.org/zh-cn/advanced/navigation-guards.html</a><br>beforeRouteUpdate只是在可复用组件之间跳转的时候才会触发，比如/foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，</li>
+</ol>
+<h2 id="vue-router动态传入路由"><a href="#vue-router动态传入路由" class="headerlink" title="vue-router动态传入路由"></a>vue-router动态传入路由</h2><p>通过this.$router.addRoutes来添加，参数为数组，和配置中的route一样，但是有一个大bug是刷新后，路由配置又回到初始路由了，所以需要在页面入口(App.vue)处再增加路由的添加。</p>
+<h2 id="vue-router其他"><a href="#vue-router其他" class="headerlink" title="vue-router其他"></a>vue-router其他</h2><p>命名视图是指平铺多个视图，而不是嵌套</p>
+<h1 id="结合element-ui需要考虑的业务交互问题"><a href="#结合element-ui需要考虑的业务交互问题" class="headerlink" title="结合element-ui需要考虑的业务交互问题"></a>结合element-ui需要考虑的业务交互问题</h1><ul>
+<li>输入框：autoComplete（模糊匹配），remote search(常用)</li>
+<li>下拉框：过滤，可清除，下拉加载更多，远程加载数据</li>
+<li>日期选择：开始时间和结束时间的相互关联。组件中监听事件不能缩写，用<code>v-on</code></li>
+<li>文案：文案需要在前期考虑清楚</li>
+<li>loading<ul>
+<li>涉及要异步加载的button要加loading,element-ui中通过<code>v-bind:loading</code></li>
+<li>在异步数据回来之前table要加loading,指令为v-loading。如果路由的全局导航守卫中有设置全局的loading，则对于keep-alive状态下的组件，在activated生命周期下需要设置为false</li>
+</ul>
+</li>
+<li>element-ui中的Pagination如果不传page_size，有默认值，为10</li>
+<li>…</li>
+</ul>
+<h1 id="函数传参以及获取后端返回的值需要考虑的问题"><a href="#函数传参以及获取后端返回的值需要考虑的问题" class="headerlink" title="函数传参以及获取后端返回的值需要考虑的问题"></a>函数传参以及获取后端返回的值需要考虑的问题</h1><ul>
+<li>输入数据的地方考虑数据格式</li>
+<li>拿到数据的时候，比如函数入参，是需要判断值否有效。用数据适配器处理</li>
+<li>给后端传参的时候，组件中用到的数据和最后要传的值可以不同，因为组件一般的值有封装好的格式，最后传值可能不是这种格式，需要一个数据适配器来处理一下。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/04/Node集群和子进程/" rel="next" title="Node集群和子进程">
+                <i class="fa fa-chevron-left"></i> Node集群和子进程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Kristof" />
+          <p class="site-author-name" itemprop="name">Kristof</p>
+           
+              <p class="site-description motion-element" itemprop="description">Beethoven in the programming world</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Vue语法相关问题"><span class="nav-number">1.</span> <span class="nav-text">Vue语法相关问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#列表渲染"><span class="nav-number">1.1.</span> <span class="nav-text">列表渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件渲染"><span class="nav-number">1.2.</span> <span class="nav-text">条件渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤器"><span class="nav-number">1.3.</span> <span class="nav-text">过滤器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件"><span class="nav-number">1.4.</span> <span class="nav-text">事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表单"><span class="nav-number">1.5.</span> <span class="nav-text">表单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据"><span class="nav-number">1.6.</span> <span class="nav-text">数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">1.7.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#组件写法"><span class="nav-number">1.7.1.</span> <span class="nav-text">组件写法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组件调用"><span class="nav-number">1.7.2.</span> <span class="nav-text">组件调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组件传值"><span class="nav-number">1.7.3.</span> <span class="nav-text">组件传值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件封装方法总结"><span class="nav-number">1.8.</span> <span class="nav-text">组件封装方法总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进阶"><span class="nav-number">1.9.</span> <span class="nav-text">进阶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑"><span class="nav-number">1.10.</span> <span class="nav-text">坑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vue-router遇到的问题"><span class="nav-number">2.</span> <span class="nav-text">vue-router遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-router传值"><span class="nav-number">2.1.</span> <span class="nav-text">vue-router传值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-router获取值"><span class="nav-number">2.2.</span> <span class="nav-text">vue-router获取值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-router导航守卫"><span class="nav-number">2.3.</span> <span class="nav-text">vue-router导航守卫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-router动态传入路由"><span class="nav-number">2.4.</span> <span class="nav-text">vue-router动态传入路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-router其他"><span class="nav-number">2.5.</span> <span class="nav-text">vue-router其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结合element-ui需要考虑的业务交互问题"><span class="nav-number">3.</span> <span class="nav-text">结合element-ui需要考虑的业务交互问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数传参以及获取后端返回的值需要考虑的问题"><span class="nav-number">4.</span> <span class="nav-text">函数传参以及获取后端返回的值需要考虑的问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kristof</span>
+</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>
+  <span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>
+  </span>
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
